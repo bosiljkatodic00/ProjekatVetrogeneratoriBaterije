@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import axios from 'axios'
+import { useNavigate } from 'react-router-dom';
 
 const Signup = () => {
-    
+
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -11,6 +12,8 @@ const Signup = () => {
     password: '', 
     userType: 'user'
   });
+
+  const navigate = useNavigate()
 
   const handleChange = (e) => {
     setFormData({
@@ -22,9 +25,10 @@ const Signup = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     // Ovde implementirati logiku za slanje podataka na server ili lokalno skladište
-    axios.post('', formData)
+    axios.post('http://localhost:3000/register', formData)
       .then(response => {
-        console.log(response.data); // Ukoliko server vrati odgovor, ovde možete manipulisati odgovorom
+        console.log(response.data)
+        navigate('/login')
       })
       .catch(error => {
         console.error('Error:', error); // Ukoliko dođe do greške pri slanju zahteva, ovde možete obraditi grešku
