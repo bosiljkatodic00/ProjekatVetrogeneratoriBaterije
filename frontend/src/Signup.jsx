@@ -3,7 +3,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom';
 
-const Signup = () => {
+const Signup = ({handleKorisnikInfo}) => {
 
   const [formData, setFormData] = useState({
     firstName: '',
@@ -12,6 +12,8 @@ const Signup = () => {
     password: '', 
     userType: 'user'
   });
+
+  const[error, setError] = useState(false);
 
   const navigate = useNavigate()
 
@@ -25,10 +27,39 @@ const Signup = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     // Ovde implementirati logiku za slanje podataka na server ili lokalno skladište
+
+    if(firstName.length === 0 || lastName.length === 0 || email.length === 0
+      || password.length === 0){
+          setError(true);
+          return;
+    }
+
+    const redirectTo = (userType) => {
+        if(userType === 'admin'){
+            navigate('/adminDashboard');
+        }
+        else if(userType === 'user'){
+            navigate('/userDashboard');
+        }
+    }
+
+
+
     axios.post('http://localhost:3000/register', formData)
       .then(response => {
         console.log(response.data)
-        navigate('/login')
+        if(response.data !== null){
+          sessionStorage.clear();
+          sessionStorage.setItem('isAuth', JSON.stringify(true));
+          //sessionStorage.setItem('token', data.token)
+          sessionStorage.setItem('korisnik', JSON.stringify(response.data));
+          handleKorisnikInfo(true); //prvo se postave podaci pa se re reneruje
+          alert("Uspješna registracija.");
+          redirectTo(formData.userType);
+        } else {
+            sessionStorage.setItem('isAuth', JSON.stringify(false));
+            handleKorisnikInfo(false);
+        }    
       })
       .catch(error => {
         console.error('Error:', error); // Ukoliko dođe do greške pri slanju zahteva, ovde možete obraditi grešku
