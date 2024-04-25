@@ -1,0 +1,9 @@
+/* styles.css */
+.headerButton {
+    margin: 8px;
+    background-color: #003C43;
+}
+
+.headerButton:hover {
+    background-color: #77B0AA;
+}

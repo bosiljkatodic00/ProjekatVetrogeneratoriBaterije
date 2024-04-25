@@ -31,23 +31,37 @@ mongoose.connect('mongodb://localhost:27017/vbDatabase', { useNewUrlParser: true
   .catch(err => console.log(err));
 
   app.post('/register', (req, res) => {
-    UserModel.create(req.body)
-    .then(allUsers => res.json(allUsers))
-    .catch(err => res.json(err))
-  });
+    const { email } = req.body;
 
-  app.post('/login', (req, res) => {
-    const {email, password} = req.body;
-    UserModel.findOne({email: email})
-    .then(user => {   
-      if(user) {
-        if(user.password === password) {
-          res.json("Success")
-        }else{
-          res.json("The password is incorrect")
-        }
-      }else{
-          res.json("No user with that email")
-      }
-    })
-  });
+    // Provera da li postoji korisnik sa istim emailom u bazi
+    UserModel.findOne({ email: email })
+        .then(existingUser => {
+            if (existingUser) {
+                res.status(400).json({ message: "Korisnik sa tim emailom već postoji" });
+            } else {
+                // Ako ne postoji korisnik, napravi novog korisnika
+                UserModel.create(req.body)
+                    .then(newUser => res.status(201).json(newUser))
+                    .catch(err => res.status(500).json({ message: "Došlo je do greške prilikom kreiranja korisnika", error: err }));
+            }
+        })
+        .catch(err => res.status(500).json({ message: "Došlo je do greške prilikom provere korisnika", error: err }));
+});
+
+app.post('/login', (req, res) => {
+  const { email, password } = req.body;
+  UserModel.findOne({ email: email })
+      .then(user => {
+          if (user) {
+              if (user.password === password) {
+                  // Dodajemo polje 'type' u odgovor
+                  res.json({ message: "Success", type: user.userType, user: user });
+              } else {
+                  res.json({ message: "The password is incorrect" });
+              }
+          } else {
+              res.json({ message: "No user with that email" });
+          }
+      })
+      .catch(err => res.status(500).json({ message: "Došlo je do greške prilikom pretrage korisnika", error: err }));
+});
