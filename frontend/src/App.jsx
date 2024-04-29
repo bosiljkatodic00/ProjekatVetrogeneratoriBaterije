@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react'; 
 import {BrowserRouter, Routes, Route} from 'react-router-dom'
 import 'bootstrap/dist/css/bootstrap.min.css'
-import Signup from './Signup'
-import Login from './Login'
-import Home from './Home'
-import Header from './Header';
-import AdminDashboard from './AdminDashboard'
-import UserDashboard from './UserDashboard';
+import Signup from './components/Signup'
+import Login from './components/Login'
+import Home from './components/Home'
+import Header from './components/Header';
+import AdminDashboard from './components/AdminDashboard'
+import UserDashboard from './components/UserDashboard';
 
 function App() {
 

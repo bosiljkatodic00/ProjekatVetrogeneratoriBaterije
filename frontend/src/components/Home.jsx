@@ -1,8 +1,8 @@
 import React from "react";
 import Typography from '@mui/material/Typography';
 import { useTheme } from '@mui/material/styles';
-import './styles.css'
-import backgroundImage from './photo.jpg'; // Putanja do pozadinske slike
+import '../styles.css'
+import backgroundImage from '../images/photo.jpg'; // Putanja do pozadinske slike
 
 const Home = () => {
     const theme = useTheme();

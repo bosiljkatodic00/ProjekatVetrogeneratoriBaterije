@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom';
-import backgroundImage from './photo.jpg'; // Putanja do pozadinske slike
-import  auth  from './config/firebase-config';
+import backgroundImage from '../images/photo.jpg'; // Putanja do pozadinske slike
+import  auth  from '../config/firebase-config';
 import {
   createUserWithEmailAndPassword
 } from "firebase/auth";
@@ -59,7 +59,7 @@ const Signup = ({handleKorisnikInfo}) => {
         },
       };
   
-      const res = await axios.post("http://localhost:3000/register", formData, payloadHeader);
+      const res = await axios.post("http://localhost:3000/auth/register", formData, payloadHeader);
       console.log(res.data);
   
       sessionStorage.setItem('isAuth', JSON.stringify(true));
