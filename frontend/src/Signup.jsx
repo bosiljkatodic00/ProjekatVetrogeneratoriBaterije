@@ -3,6 +3,10 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom';
 import backgroundImage from './photo.jpg'; // Putanja do pozadinske slike
+import  auth  from './config/firebase-config';
+import {
+  createUserWithEmailAndPassword
+} from "firebase/auth";
 
 const Signup = ({handleKorisnikInfo}) => {
 
@@ -25,49 +29,50 @@ const Signup = ({handleKorisnikInfo}) => {
     });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Ovde implementirati logiku za slanje podataka na server ili lokalno skladište
-
-    if(firstName.length === 0 || lastName.length === 0 || email.length === 0
-      || password.length === 0){
-          setError(true);
-          return;
+  const redirectTo = (userType) => {
+    if(userType === 'admin'){
+        navigate('/adminDashboard');
     }
-
-    const redirectTo = (userType) => {
-        if(userType === 'admin'){
-            navigate('/adminDashboard');
-        }
-        else if(userType === 'user'){
-            navigate('/userDashboard');
-        }
+    else if(userType === 'user'){
+        navigate('/userDashboard');
     }
-
-    axios.post('http://localhost:3000/register', formData)
-      .then(response => {
-        console.log(response.data)
-        if(response.data !== null){
-          sessionStorage.clear();
-          sessionStorage.setItem('isAuth', JSON.stringify(true));
-          //sessionStorage.setItem('token', data.token)
-          sessionStorage.setItem('korisnik', JSON.stringify(response.data));
-          handleKorisnikInfo(true); //prvo se postave podaci pa se re reneruje
-          alert("Uspješna registracija.");
-          redirectTo(formData.userType);
-        } else {
-            sessionStorage.setItem('isAuth', JSON.stringify(false));           
-            window.alert(response.data);
-            handleKorisnikInfo(false);
-        }    
-      })
-      .catch(error => {
-        console.error('Error:', error); // Ukoliko dođe do greške pri slanju zahteva, ovde možete obraditi grešku
-        window.alert('Došlo je do greške prilikom registracije. Molimo pokušajte ponovo.');
-      });
-    console.log(formData);
   };
 
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+  
+    if(formData.firstName.length === 0 || formData.lastName.length === 0 || formData.email.length === 0 || formData.password.length === 0){
+      setError(true);
+      return;
+    }
+  
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
+      const user = userCredential.user;
+      const token = await user.getIdToken();
+  
+      const payloadHeader = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      };
+  
+      const res = await axios.post("http://localhost:3000/register", formData, payloadHeader);
+      console.log(res.data);
+  
+      sessionStorage.setItem('isAuth', JSON.stringify(true));
+      sessionStorage.setItem('korisnik', JSON.stringify(user));
+      handleKorisnikInfo(true);
+      alert("Uspješna registracija.");
+      redirectTo(formData.userType);
+    } catch (error) {
+      console.error('Error:', error);
+      window.alert('Došlo je do greške prilikom registracije. Molimo pokušajte ponovo.');
+    }
+  };
+  
 
   return (
     <div style={{ textAlign: 'center', backgroundImage: `url(${backgroundImage})`, backgroundSize: 'cover', backgroundPosition: 'center', minHeight: '95vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>

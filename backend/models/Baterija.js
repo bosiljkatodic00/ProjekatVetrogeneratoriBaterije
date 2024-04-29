@@ -44,11 +44,11 @@ const BaterijaSchema = new Schema({
         default: 'mirovanje'
     },
     t1: {
-        type: Date,
+        type: Number,
         required: true
     },
     t2: {
-        type: Date,
+        type: Number,
         required: true
     }
 });

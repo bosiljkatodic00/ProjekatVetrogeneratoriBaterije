@@ -1,8 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom';
 import backgroundImage from './photo.jpg'; // Putanja do pozadinske slike
+//import firebase from 'firebase/compat/app';
+//import 'firebase/compat/auth';
+// Importujte inicijalizaciju Firebase iz vašeg fajla
+import  auth  from './config/firebase-config';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 
 const Login = ({handleKorisnikInfo}) => {
 
@@ -11,8 +16,6 @@ const Login = ({handleKorisnikInfo}) => {
     password: ''
   });
 
-    //const [email, setEmail] = useState()
-    //const [password, setPassword] = useState()
     const navigate = useNavigate()
 
     const handleChange = (e) => {
@@ -31,28 +34,34 @@ const Login = ({handleKorisnikInfo}) => {
       }
     }
 
-  const handleSubmit = (e) => {
+  
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Ovde implementirati logiku za slanje podataka na server ili lokalno skladište
-    axios.post('http://localhost:3000/login', formData)
-      .then(response => {
-        console.log(response.data)
-        if(response.data.message === "Success"){
-          sessionStorage.setItem('isAuth', JSON.stringify(true));
-          //sessionStorage.setItem('token', data.token)
-          sessionStorage.setItem('korisnik', JSON.stringify(response.data.user));
-          handleKorisnikInfo(true); //prvo se postave podaci pa se renderuje
-          window.alert("Uspješno prijavljivanje.");
-          redirectTo(response.data.type)
-        } else {
-          window.alert(response.data);
-          handleKorisnikInfo(false);
-      }
-      })
-      .catch(error => {
-        console.error('Error:', error); // Ukoliko dođe do greške pri slanju zahteva, ovde možete obraditi grešku
-        window.alert('Došlo je do greške prilikom prijave. Molimo pokušajte ponovo.');
-      });
+  
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, formData.email, formData.password);
+      const user = userCredential.user;
+      const token = await user.getIdToken();
+  
+      const payloadHeader = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      };
+  
+      const res = await axios.post("http://localhost:3000/login", formData, payloadHeader);
+      console.log(res.data);
+  
+      sessionStorage.setItem('isAuth', JSON.stringify(true));
+      sessionStorage.setItem('korisnik', JSON.stringify(user));
+      handleKorisnikInfo(true);
+      alert("Uspješna prijava.");
+      redirectTo(res.data.type);
+    } catch (error) {
+      console.error('Error:', error);
+      window.alert('Došlo je do greške prilikom prijave. Molimo pokušajte ponovo.');
+    }
   };
 
 

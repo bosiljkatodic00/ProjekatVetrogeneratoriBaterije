@@ -1,9 +1,11 @@
 // Import dependencies
-const express = require('express');
-const bodyParser = require('body-parser');
-const cors = require('cors');
-const mongoose = require('mongoose');
-const UserModel = require('./models/User')
+import express from 'express';
+import bodyParser from 'body-parser';
+import cors from 'cors';
+import mongoose from 'mongoose';
+import UserModel from './models/User.js';
+import VerifyToken from "./middleware/VerifyToken.js";
+
 
 // Initialize Express app
 const app = express();
@@ -13,11 +15,16 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
 
+//app.use(VerifyToken); // Add this middleware
+
 // Define routes
 app.get('/', (req, res) => {
   res.send('Hello World!');
 });
 
+// Apply token verification middleware to relevant routes
+app.use('/register', VerifyToken);
+app.use('/login', VerifyToken);
 
 
 // Start the server

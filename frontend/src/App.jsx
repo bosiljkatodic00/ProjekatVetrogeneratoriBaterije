@@ -50,6 +50,7 @@ function App() {
           <Route path='/register' element={<Signup handleKorisnikInfo={handleKorisnikInfo}/>}></Route>
           <Route path='/login' element={<Login handleKorisnikInfo={handleKorisnikInfo}/>}></Route>
           <Route path='/home' element={<Home />}></Route>
+          <Route path='/' element={<Home />}></Route>
           <Route path='/adminDashboard' element={<AdminDashboard></AdminDashboard>}/>
           <Route path='/userDashboard' element={<UserDashboard></UserDashboard>}/>
 
