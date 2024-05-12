@@ -7,6 +7,8 @@ import  auth  from '../config/firebase-config';
 import {
   createUserWithEmailAndPassword
 } from "firebase/auth";
+import { register } from '../services/UserService'; // Importujemo authService
+
 
 const Signup = ({handleKorisnikInfo}) => {
 
@@ -51,22 +53,33 @@ const Signup = ({handleKorisnikInfo}) => {
       const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
       const user = userCredential.user;
       const token = await user.getIdToken();
-  
+  /*
       const payloadHeader = {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
       };
+  */
+      const data = await register(formData, token);
+      if(data !== null){
+        console.log(data);
   
+/*
       const res = await axios.post("http://localhost:3000/auth/register", formData, payloadHeader);
       console.log(res.data);
-  
+  */
       sessionStorage.setItem('isAuth', JSON.stringify(true));
       sessionStorage.setItem('korisnik', JSON.stringify(user));
       handleKorisnikInfo(true);
       alert("Uspješna registracija.");
       redirectTo(formData.userType);
+      }
+      else
+      {
+      sessionStorage.setItem("isAuth", false);
+      handleKorisnikInfo(false); 
+      }
     } catch (error) {
       console.error('Error:', error);
       window.alert('Došlo je do greške prilikom registracije. Molimo pokušajte ponovo.');
