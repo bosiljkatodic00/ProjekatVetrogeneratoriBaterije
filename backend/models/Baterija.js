@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 
 const BaterijaSchema = new Schema({
@@ -18,23 +18,23 @@ const BaterijaSchema = new Schema({
             required: true
         }
     },
-    kapacitet: {
+    kapacitetB: {
         type: Number,
         required: true
     },
-    snaga: {
+    snagaB: {
         type: Number,
         required: true
     },
-    napunjenost: {
+    napunjenostB: {
         type: Number,
         default: 0
     },
-    trajanjePunjena: {
+    trajanjePunjenaB: {
         type: Number,
         required: true
     },
-    trajanjePraznjenja: {
+    trajanjePraznjenjaB: {
         type: Number,
         required: true
     },
@@ -56,5 +56,5 @@ const BaterijaSchema = new Schema({
 // Indeksiranje za geoprostorne upite
 BaterijaSchema.index({ lokacija: '2dsphere' });
 
-const Baterija = mongoose.model('baterije', BaterijaSchema);
-module.exports = Baterija;
+const BaterijaModel = mongoose.model('baterije', BaterijaSchema);
+export default BaterijaModel;

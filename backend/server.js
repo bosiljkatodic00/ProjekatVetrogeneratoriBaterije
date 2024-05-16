@@ -4,6 +4,7 @@ import cors from 'cors';
 import mongoose from 'mongoose';
 import UserModel from './models/User.js';
 import authRoutes from './routes/authRoutes.js';
+import vetrogeneratorRoutes from './routes/vetrogeneratorRoutes.js';
 
 // Initialize Express app
 const app = express();
@@ -17,9 +18,8 @@ app.use(cors());
 app.get('/', (req, res) => {
   res.send('Hello World!');
 });
-
-// Define routes
 app.use('/auth', authRoutes);
+app.use('/vb', vetrogeneratorRoutes);
 
 // Connect to MongoDB
 mongoose.connect('mongodb://localhost:27017/vbDatabase', { useNewUrlParser: true, useUnifiedTopology: true })

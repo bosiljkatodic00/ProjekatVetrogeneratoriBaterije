@@ -56,7 +56,8 @@ const Login = ({handleKorisnikInfo}) => {
         console.log(data);
   
       sessionStorage.setItem('isAuth', JSON.stringify(true));
-      sessionStorage.setItem('korisnik', JSON.stringify(user));
+      sessionStorage.setItem('korisnik', JSON.stringify(data.user));
+      sessionStorage.setItem('token', token);
       handleKorisnikInfo(true);
       alert("Uspješna prijava.");
       redirectTo(data.type);

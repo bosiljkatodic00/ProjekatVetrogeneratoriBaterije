@@ -38,7 +38,7 @@ function App() {
     sessionStorage.removeItem('isAuth');
     sessionStorage.removeItem('token');
     setIsAuth(false);
-    setTipKorisnika('');
+    setUserType('');
     setIsKorisnikInfoGot(false);  
   }
 

@@ -70,7 +70,8 @@ const Signup = ({handleKorisnikInfo}) => {
       console.log(res.data);
   */
       sessionStorage.setItem('isAuth', JSON.stringify(true));
-      sessionStorage.setItem('korisnik', JSON.stringify(user));
+      sessionStorage.setItem('korisnik', JSON.stringify(data));
+      sessionStorage.setItem('token', token);
       handleKorisnikInfo(true);
       alert("Uspješna registracija.");
       redirectTo(formData.userType);

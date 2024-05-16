@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 
 const VetrogeneratorSchema = new Schema({
@@ -18,11 +18,11 @@ const VetrogeneratorSchema = new Schema({
             required: true
         }
     },
-    nominalnaSnaga: {
+    nominalnaSnagaV: {
         type: Number,
         required: true
     },
-    trenutnaSnaga: {
+    trenutnaSnagaV: {
         type: Number,
         default: 0
     }
@@ -31,5 +31,5 @@ const VetrogeneratorSchema = new Schema({
 // Indeksiranje za geoprostorne upite
 VetrogeneratorSchema.index({ lokacija: '2dsphere' });
 
-const Vetrogenerator = mongoose.model('vetrogeneratori', VetrogeneratorSchema);
-module.exports = Vetrogenerator;
+const VetrogeneratorModel = mongoose.model('vetrogeneratori', VetrogeneratorSchema);
+export default VetrogeneratorModel;
