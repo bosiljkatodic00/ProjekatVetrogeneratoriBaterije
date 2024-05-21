@@ -14,7 +14,42 @@ const vetrogeneratorController = {
             console.error(error);
             res.status(500).json({ message: 'Greška prilikom kreiranja vetrogeneratora i baterije.', error: error.message });
         }
-    }
-};
+    },
 
+
+    getVForUser: async (req, res) => {
+        try {
+            // Korisnik iz sesije
+            console.log(req.query);
+
+            const id = req.query.id;
+
+
+            // Dobavljanje vetrogeneratora za datog korisnika
+            const vetrogenerators = await VetrogeneratorModel.find({ vlasnik: id });
+
+            res.status(200).json(vetrogenerators);
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ message: 'Greška prilikom dobavljanja vetrogeneratora.', error: error.message });
+        }
+    },
+
+    getBForUser: async (req, res) => {
+        try {
+            // Korisnik iz sesije
+            const id = req.query.id;
+
+
+            // Dobavljanje baterija za datog korisnika
+            const batteries = await BaterijaModel.find({ vlasnik: id });
+
+            res.status(200).json(batteries);
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ message: 'Greška prilikom dobavljanja baterija.', error: error.message });
+        }
+    }
+
+};
 export default vetrogeneratorController;

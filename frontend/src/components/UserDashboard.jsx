@@ -9,6 +9,7 @@ import Box from '@mui/material/Box';
 import { useTheme } from '@mui/material/styles';
 import backgroundImage from '../images/photo.jpg'; // Putanja do pozadinske slike
 import { createVB } from '../services/VBService';
+import UserOverview from './UserOverview';
 
 const UserDashboard = () => {
     const [korisnik, setKorisnik] = useState(null);
@@ -122,6 +123,8 @@ const UserDashboard = () => {
                         Kreiraj
                     </Button>
                 </form>
+                
+                <UserOverview />
             </Box>
         </div>
     );
