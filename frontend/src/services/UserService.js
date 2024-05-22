@@ -15,8 +15,10 @@ export const login = async (email, password, token) => {
         });
         return data;
     } catch (error) {
-        console.error(error);
-        throw new Error('Greška prilikom prijave korisnika.');
+        if (error.response && error.response.data) {
+            throw new Error(error.response.data.message);
+        }
+        throw new Error('Greška prilikom logovanja.');
     }
 };
 

@@ -50,18 +50,47 @@ export const getB = async (token) => {
     }
 };
 
-export const blockUser = async (userId) => {
-    const response = await axios.post(`${API_URL}/users/block`, { userId });
-    return response.data;
+export const blockUser = async (userId, token) => {
+    try {
+        const response = await axios.post(`${baseUrl}/user/block`, { userId }, {
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`
+            }
+        });
+        return response.data;
+    } catch (error) {
+        console.error(error);
+        throw new Error('Greška prilikom blokiranja korisnika.');
+    }
 };
 
-export const deleteVB = async (vbId) => {
-    const response = await axios.delete(`${API_URL}/vetrogenerators/${vbId}`);
-    return response.data;
+export const deleteVB = async (vbId, token) => {
+    try {
+        const response = await axios.delete(`${baseUrl}/vb/${vbId}`, {
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`
+            }
+        });
+        return response.data;
+    } catch (error) {
+        console.error(error);
+        throw new Error('Greška prilikom brisanja vetrogeneratora/baterije.');
+    }
 };
 
-// Implementirajte funkciju updateVB za izmjenu podataka vetrogeneratora i baterija
-export const updateVB = async (vbId, data) => {
-    const response = await axios.put(`${API_URL}/vetrogenerators/${vbId}`, data);
-    return response.data;
+export const updateVB = async (vbId, data, token) => {
+    try {
+        const response = await axios.put(`${baseUrl}/vb/${vbId}`, data, {
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`
+            }
+        });
+        return response.data;
+    } catch (error) {
+        console.error(error);
+        throw new Error('Greška prilikom izmjene vetrogeneratora/baterije.');
+    }
 };

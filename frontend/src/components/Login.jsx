@@ -53,23 +53,30 @@ const Login = ({handleKorisnikInfo}) => {
   */
       const data = await login(formData.email, formData.password, token);
       if(data !== null){
+        if (data.message === 'Vaš nalog je blokiran. Molimo kontaktirajte podršku.') {
+          window.alert(data.message);
+          sessionStorage.setItem("isAuth", false);
+          handleKorisnikInfo(false);
+          return;
+        }
         console.log(data);
-  
-      sessionStorage.setItem('isAuth', JSON.stringify(true));
-      sessionStorage.setItem('korisnik', JSON.stringify(data.user));
-      sessionStorage.setItem('token', token);
-      handleKorisnikInfo(true);
-      alert("Uspješna prijava.");
-      redirectTo(data.type);
-      } else
+    
+        sessionStorage.setItem('isAuth', JSON.stringify(true));
+        sessionStorage.setItem('korisnik', JSON.stringify(data.user));
+        sessionStorage.setItem('token', token);
+        handleKorisnikInfo(true);
+        alert("Uspješna prijava.");
+        redirectTo(data.type);
+      } 
+      else
       {
-      sessionStorage.setItem("isAuth", false);
-      handleKorisnikInfo(false); 
+        sessionStorage.setItem("isAuth", false);
+        handleKorisnikInfo(false); 
       }
       
     } catch (error) {
       console.error('Error:', error);
-      window.alert('Došlo je do greške prilikom prijave. Molimo pokušajte ponovo.');
+      window.alert(error);
     }
   };
 

@@ -23,6 +23,11 @@ const authController = {
     try {
       const user = await UserModel.findOne({ email: email });
       if (user) {
+        // Provera da li je korisnik blokiran
+        if (user.isBlocked) {
+          return res.status(403).json({ message: 'Vaš nalog je blokiran. Molimo kontaktirajte podršku.' });
+        }
+
         if (user.password === password) {
           return res.json({ message: "Success", type: user.userType, user: user });
         } else {

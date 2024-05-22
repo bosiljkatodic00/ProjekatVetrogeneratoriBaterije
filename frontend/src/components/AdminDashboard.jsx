@@ -53,43 +53,54 @@ const AdminDashboard = () => {
       
         fetchData();
       }, [token]);
-/*
+
     const handleBlockUser = async (userId) => {
         try {
-            await blockUser(userId);
-            alert('User blocked successfully.');
-            setUsers(users.filter(user => user._id !== userId));
+            await blockUser(userId, token);
+            setUsers(users.map(user => user._id === userId ? { ...user, isBlocked: true } : user));
+            alert('Korisnik uspješno blokiran.');
         } catch (error) {
-            console.error('Error blocking user:', error);
-            alert('Failed to block user.');
+            console.error('Greška prilikom blokiranja korisnika:', error);
+            alert('Neuspješno blokiranje korisnika.');
         }
     };
 
     const handleDeleteVB = async (vbId) => {
         try {
-            await deleteVB(vbId);
-            alert('Deleted successfully.');
+            await deleteVB(vbId, token);
+            alert('Uspješno obrisano.');
             setVetrogenerators(vetrogenerators.filter(vb => vb._id !== vbId));
-            setBatteries(batteries.filter(vb => vb._id !== vbId));
+            setBatteries(batteries.filter(b => b._id !== vbId));
         } catch (error) {
-            console.error('Error deleting:', error);
-            alert('Failed to delete.');
+            console.error('Greška prilikom brisanja:', error);
+            alert('Neuspješno brisanje.');
         }
     };
-*/
+
+    const handleUpdateVB = async (vbId, data) => {
+        try {
+            await updateVB(vbId, data, token);
+            alert('Uspješno ažurirano.');
+            // Osvježite podatke ili upravljajte stanjem prema potrebi
+        } catch (error) {
+            console.error('Greška prilikom ažuriranja:', error);
+            alert('Neuspješno ažuriranje.');
+        }
+    };
+
     return (
         <Box sx={{ padding: 3 }}>
             <Typography variant="h4" gutterBottom>Admin Dashboard</Typography>
             <Box sx={{ marginBottom: 5 }}>
-                <Typography variant="h5" gutterBottom>All Users</Typography>
+                <Typography variant="h5" gutterBottom>Svi korisnici</Typography>
                 <TableContainer component={Paper}>
                     <Table>
                         <TableHead>
                             <TableRow>
                                 <TableCell>ID</TableCell>
-                                <TableCell>Name</TableCell>
+                                <TableCell>Ime</TableCell>
                                 <TableCell>Email</TableCell>
-                                <TableCell>Action</TableCell>
+                                <TableCell>Akcija</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
@@ -98,7 +109,15 @@ const AdminDashboard = () => {
                                     <TableCell>{user._id}</TableCell>
                                     <TableCell>{user.firstName}</TableCell>
                                     <TableCell>{user.email}</TableCell>
-                                    
+                                    <TableCell>
+                                        {user.isBlocked ? (
+                                            <Button disabled>Blokiran</Button>
+                                        ) : (
+                                            <Button onClick={() => handleBlockUser(user._id)} color="secondary">
+                                                Blokiraj
+                                            </Button>
+                                        )}
+                                    </TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>
@@ -106,7 +125,7 @@ const AdminDashboard = () => {
                 </TableContainer>
             </Box>
             <Box sx={{ marginBottom: 5 }}>
-                <Typography variant="h5" gutterBottom>All Vetrogenerators</Typography>
+                <Typography variant="h5" gutterBottom>Svi vetrogeneratori</Typography>
                 <TableContainer component={Paper}>
                     <Table>
                         <TableHead>
@@ -114,8 +133,8 @@ const AdminDashboard = () => {
                                 <TableCell>ID</TableCell>
                                 <TableCell>Nominalna snaga</TableCell>
                                 <TableCell>Trenutna snaga</TableCell>
-                                <TableCell>Owner ID</TableCell>
-                                <TableCell>Action</TableCell>
+                                <TableCell>Vlasnik ID</TableCell>
+                                <TableCell>Akcija</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
@@ -125,7 +144,14 @@ const AdminDashboard = () => {
                                     <TableCell>{v.nominalnaSnagaV}</TableCell>
                                     <TableCell>{v.trenutnaSnagaV}</TableCell>
                                     <TableCell>{v.vlasnik}</TableCell>
-                                    
+                                    <TableCell>
+                                        <Button variant="contained" color="primary" onClick={() => handleUpdateVB(v._id, {/* pass data here */})}>
+                                            Izmijeni
+                                        </Button>
+                                        <Button variant="contained" color="secondary" onClick={() => handleDeleteVB(v._id)}>
+                                            Obriši
+                                        </Button>
+                                    </TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>
@@ -133,22 +159,21 @@ const AdminDashboard = () => {
                 </TableContainer>
             </Box>
             <Box>
-                <Typography variant="h5" gutterBottom>All Batteries</Typography>
+                <Typography variant="h5" gutterBottom>Sve baterije</Typography>
                 <TableContainer component={Paper}>
                     <Table>
                         <TableHead>
                             <TableRow>
                                 <TableCell>ID</TableCell>
-                                <TableCell>Capacity</TableCell>
-                                <TableCell>Owner ID</TableCell>
+                                <TableCell>Kapacitet</TableCell>
+                                <TableCell>Vlasnik ID</TableCell>
                                 <TableCell>Napunjenost</TableCell>
                                 <TableCell>Trajanje punjenja</TableCell>
-                                <TableCell>Trajanje praznjenja</TableCell>
+                                <TableCell>Trajanje pražnjenja</TableCell>
                                 <TableCell>t1</TableCell>
                                 <TableCell>t2</TableCell>
-
                                 <TableCell>Stanje</TableCell>
-                                <TableCell>Action</TableCell>
+                                <TableCell>Akcija</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
@@ -163,7 +188,14 @@ const AdminDashboard = () => {
                                     <TableCell>{b.t1}</TableCell>
                                     <TableCell>{b.t2}</TableCell>
                                     <TableCell>{b.stanje}</TableCell>
-
+                                    <TableCell>
+                                        <Button variant="contained" color="primary" onClick={() => handleUpdateVB(b._id, {/* pass data here */})}>
+                                            Izmijeni
+                                        </Button>
+                                        <Button variant="contained" color="secondary" onClick={() => handleDeleteVB(b._id)}>
+                                            Obriši
+                                        </Button>
+                                    </TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>

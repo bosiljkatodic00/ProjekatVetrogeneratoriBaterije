@@ -11,7 +11,7 @@ const center = {
   lng: 20.457273, // default longitude
 };
 
-const Map = ({ onMapClick }) => {
+const Map = ({ vetrogenerators, batteries, onMapClick, isClickable }) => {
 
     const [markerPosition, setMarkerPosition] = useState({ lat: 44.787197, lng: 20.457273});
 
@@ -28,10 +28,12 @@ const Map = ({ onMapClick }) => {
     return <div>Loading maps</div>;
   }
   const handleMapClick = (e) => {
-    const lat = e.latLng.lat();
-    const lng = e.latLng.lng();
-    setMarkerPosition({ lat, lng });
-    onMapClick(lat, lng); // Pozivamo funkciju koju smo dobili kao prop
+    if (isClickable) {
+      const lat = e.latLng.lat();
+      const lng = e.latLng.lng();
+      setMarkerPosition({ lat, lng });
+      onMapClick(lat, lng); // Pozivamo funkciju koju smo dobili kao prop
+    }
 };
 
   return (
@@ -40,9 +42,17 @@ const Map = ({ onMapClick }) => {
         mapContainerStyle={mapContainerStyle}
         zoom={10}
         center={center}
-        onClick={handleMapClick}
+        onClick={isClickable ? handleMapClick : null} // Samo reaguje na klik ako je isClickable true
       >
-        <MarkerF position={{ lat: markerPosition.lat, lng: markerPosition.lng }} />
+        {/* Prikaz markera za vjetrogeneratore */}
+        {vetrogenerators && vetrogenerators.map((vetrogenerator, index) => (
+          <MarkerF
+            key={index}
+            position={{ lat: vetrogenerator.lokacija.coordinates[1], lng: vetrogenerator.lokacija.coordinates[0] }}
+          />
+        ))}
+
+      {isClickable && <MarkerF position={{ lat: markerPosition.lat, lng: markerPosition.lng }} />}
       </GoogleMap>
     </div>
   );

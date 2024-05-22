@@ -1,13 +1,13 @@
 import mongoose from 'mongoose';
 
-
 const UserSchema = new mongoose.Schema({
-    firstName: String,
-    lastName: String,
-    email: String,
-    password: String,
-    userType: String
-})
+    firstName: { type: String, required: true },
+    lastName: { type: String, required: true },
+    email: { type: String, required: true, unique: true },
+    password: { type: String, required: true },
+    userType: { type: String, required: true, enum: ['admin', 'user'] },
+    isBlocked: { type: Boolean, default: false }
+});
 
-const UserModel = mongoose.model("allUsers", UserSchema)
+const UserModel = mongoose.model('allUsers', UserSchema);
 export default UserModel;

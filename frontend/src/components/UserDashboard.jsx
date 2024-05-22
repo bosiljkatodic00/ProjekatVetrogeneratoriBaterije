@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { GoogleMap, useJsApiLoader, Marker } from '@react-google-maps/api';
 import Map  from './Map';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
@@ -14,6 +13,7 @@ import UserOverview from './UserOverview';
 const UserDashboard = () => {
     const [korisnik, setKorisnik] = useState(null);
     const [token, setToken] = useState(null);
+    const [refreshData, setRefreshData] = useState(false); // Dodajemo state za osvježavanje podataka
 
     useEffect(() => {
         const userFromStorage = JSON.parse(sessionStorage.getItem('korisnik'));
@@ -63,6 +63,8 @@ const UserDashboard = () => {
         try {
             await createVB(formData, tokenP);
             alert('Vetrogenerator i baterija kreirani.');
+            handleRefreshData();
+
         } catch (error) {
             console.error(error);
             alert('Greška prilikom kreiranja vetrogeneratora i baterije.');
@@ -76,6 +78,11 @@ const UserDashboard = () => {
         });
     };
 
+    // Definiramo funkciju za osvježavanje podataka
+    const handleRefreshData = () => {
+        setRefreshData(!refreshData); // Invertujemo trenutnu vrijednost refreshData kako bi se osvježila komponenta UserOverview
+    };
+
 
     return (
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', backgroundImage: `url(${backgroundImage})`, backgroundSize: 'cover' }}>
@@ -87,7 +94,7 @@ const UserDashboard = () => {
                 </Box>
                 <Box style={{ marginBottom: 20, display: 'flex', width: '100%' }}>
                     <Box style={{ marginRight: 20, flex: 1 }}>
-                        <UserOverview />
+                        <UserOverview refreshData={handleRefreshData} />
                     </Box>
                     <Box style={{ flex: 1 }}>
                         <Box style={{ marginBottom: 20, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -98,7 +105,7 @@ const UserDashboard = () => {
                         <Typography variant="body1" color='primary' paragraph>
                             Unesite podatke o vetrogeneratoru i bateriji:
                         </Typography>
-                        <Map onMapClick={handleMapClick} />
+                        <Map onMapClick={handleMapClick} isClickable={true}/>
                         <form onSubmit={handleSubmitVetrogeneratorBaterija}>
                             <Typography variant="body1" color='primary' paragraph>
                                 Podaci o vetrogeneratoru:

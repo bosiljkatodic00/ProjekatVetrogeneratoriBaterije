@@ -1,7 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { getV } from '../services/VBService';
-import { getB } from '../services/VBService';
 import Typography from '@mui/material/Typography';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -10,34 +7,29 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
+import Map from './Map'; // Importujte Map komponentu iz userdashboard
+import { getV } from '../services/VBService';
+import { getB } from '../services/VBService';
 
-const UserOverview = () => {
+const UserOverview = ({ refreshData }) => {
   const [vetrogenerators, setVetrogenerators] = useState([]);
   const [batteries, setBatteries] = useState([]);
   const [korisnik, setKorisnik] = useState(null);
   const [token, setToken] = useState(null);
 
-
-  useEffect(() => {
-    const userFromStorage = JSON.parse(sessionStorage.getItem('korisnik'));
-    const tokenFromStorage = sessionStorage.getItem('token');
-
-    if (userFromStorage) {
-      setKorisnik(userFromStorage);
-    }
-    if (tokenFromStorage) {
-      setToken(tokenFromStorage);
-    }
-  }, []);
-
   useEffect(() => {
     const fetchData = async () => {
-      if (korisnik && token) {
+      const userFromStorage = JSON.parse(sessionStorage.getItem('korisnik'));
+      const tokenFromStorage = sessionStorage.getItem('token');
+
+      if (userFromStorage && tokenFromStorage) {
+        setKorisnik(userFromStorage);
+        setToken(tokenFromStorage);
+
         try {
-          // Preuzimanje vetrogeneratora i baterija paralelno
           const [responseV, responseB] = await Promise.all([
-            getV(korisnik._id, token),
-            getB(korisnik._id, token)
+            getV(userFromStorage._id, tokenFromStorage),
+            getB(userFromStorage._id, tokenFromStorage)
           ]);
           
           // Postavljanje stanja za vetrogeneratore i baterije
@@ -51,18 +43,16 @@ const UserOverview = () => {
         }
       }
     };
-  
+
     fetchData();
-  }, [korisnik, token]);
+  }, [refreshData]);
 
- return (
-    
+  return (
     <div style={{ display: 'flex', justifyContent: 'space-around', alignItems: 'center', marginBottom: '20px' }}>
-
       <div style={{ display: 'flex' }}>
         <div>
-            
           <Typography variant="h5" gutterBottom color='primary' >Vaši vetrogeneratori:</Typography>
+          <Map vetrogenerators={vetrogenerators} batteries={batteries} isClickable={false} />
           <TableContainer component={Paper}>
             <Table>
               <TableHead>
@@ -108,6 +98,5 @@ const UserOverview = () => {
     </div>
   );
 };
-
 
 export default UserOverview;
