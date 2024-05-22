@@ -69,6 +69,27 @@ const vetrogeneratorController = {
             console.error(error);
             res.status(500).json({ message: 'Greška prilikom dobavljanja baterija.', error: error.message });
         }
+    },
+    deleteVetrogenerator: async (req, res) => {
+        try {
+            const { vId } = req.params;
+            await VetrogeneratorModel.findByIdAndDelete(vId);
+            res.status(200).json({ message: 'Vetrogenerator uspješno obrisan.' });
+        } catch (error) {
+            console.error('Greška prilikom brisanja vetrogeneratora:', error);
+            res.status(500).json({ message: 'Greška prilikom brisanja vetrogeneratora.' });
+        }
+    },
+    
+    deleteBaterija: async (req, res) => {
+        try {
+            const { bId } = req.params;
+            await BaterijaModel.findByIdAndDelete(bId);
+            res.status(200).json({ message: 'Baterija uspješno obrisana.' });
+        } catch (error) {
+            console.error('Greška prilikom brisanja baterije:', error);
+            res.status(500).json({ message: 'Greška prilikom brisanja baterije.' });
+        }
     }
 
 };

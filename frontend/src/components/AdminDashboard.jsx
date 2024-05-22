@@ -10,7 +10,7 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import { getUsers, blockUser, deleteVB, updateVB } from '../services/AdminService';
+import { getUsers, blockUser, deleteV, deleteB, updateVB } from '../services/AdminService';
 import { getV } from '../services/AdminService';
 import { getB } from '../services/AdminService';
 
@@ -64,17 +64,28 @@ const AdminDashboard = () => {
         }
     };
 
-    const handleDeleteVB = async (vbId) => {
+    const handleDeleteV = async (vId) => {
         try {
-            await deleteVB(vbId, token);
+            await deleteV(vId, token);
             alert('Uspješno obrisano.');
-            setVetrogenerators(vetrogenerators.filter(vb => vb._id !== vbId));
-            setBatteries(batteries.filter(b => b._id !== vbId));
+            setVetrogenerators(vetrogenerators.filter(vb => vb._id !== vId));
         } catch (error) {
             console.error('Greška prilikom brisanja:', error);
             alert('Neuspješno brisanje.');
         }
     };
+
+    const handleDeleteB = async (bId) => {
+        try {
+            await deleteB(bId, token);
+            alert('Uspješno obrisano.');
+            setBatteries(batteries.filter(vb => vb._id !== bId));
+        } catch (error) {
+            console.error('Greška prilikom brisanja:', error);
+            alert('Neuspješno brisanje.');
+        }
+    };
+
 
     const handleUpdateVB = async (vbId, data) => {
         try {
@@ -147,7 +158,7 @@ const AdminDashboard = () => {
                                         <Button variant="contained" color="primary" onClick={() => handleUpdateVB(v._id, {/* pass data here */})}>
                                             Izmijeni
                                         </Button>
-                                        <Button variant="contained" color="secondary" onClick={() => handleDeleteVB(v._id)}>
+                                        <Button variant="contained" color="secondary" onClick={() => handleDeleteV(v._id)}>
                                             Obriši
                                         </Button>
                                     </TableCell>
@@ -191,7 +202,7 @@ const AdminDashboard = () => {
                                         <Button variant="contained" color="primary" onClick={() => handleUpdateVB(b._id, {/* pass data here */})}>
                                             Izmijeni
                                         </Button>
-                                        <Button variant="contained" color="secondary" onClick={() => handleDeleteVB(b._id)}>
+                                        <Button variant="contained" color="secondary" onClick={() => handleDeleteB(b._id)}>
                                             Obriši
                                         </Button>
                                     </TableCell>

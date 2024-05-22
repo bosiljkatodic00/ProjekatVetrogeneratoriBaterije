@@ -65,9 +65,9 @@ export const blockUser = async (userId, token) => {
     }
 };
 
-export const deleteVB = async (vbId, token) => {
+export const deleteV = async (vId, token) => {
     try {
-        const response = await axios.delete(`${baseUrl}/vb/${vbId}`, {
+        const response = await axios.delete(`${baseUrl}/vb/deleteV/${vId}`, {
             headers: {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${token}`
@@ -76,7 +76,22 @@ export const deleteVB = async (vbId, token) => {
         return response.data;
     } catch (error) {
         console.error(error);
-        throw new Error('Greška prilikom brisanja vetrogeneratora/baterije.');
+        throw new Error('Greška prilikom brisanja vetrogeneratora.');
+    }
+};
+
+export const deleteB = async (bId, token) => {
+    try {
+        const response = await axios.delete(`${baseUrl}/vb/deleteB/${bId}`, {
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`
+            }
+        });
+        return response.data;
+    } catch (error) {
+        console.error(error);
+        throw new Error('Greška prilikom brisanja baterije.');
     }
 };
 
