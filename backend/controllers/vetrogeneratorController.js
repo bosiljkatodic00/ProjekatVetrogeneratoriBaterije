@@ -49,7 +49,29 @@ const vetrogeneratorController = {
             console.error(error);
             res.status(500).json({ message: 'Greška prilikom dobavljanja baterija.', error: error.message });
         }
+    },
+
+    getAllVetrogenerators: async (req, res) => {
+        try {
+            const vetrogenerators = await VetrogeneratorModel.find();
+            res.status(200).json(vetrogenerators);
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ message: 'Greška prilikom dobavljanja vetrogeneratora.', error: error.message });
+        }
+    },
+
+    getAllBatteries: async (req, res) => {
+        try {
+            const batteries = await BaterijaModel.find();
+            res.status(200).json(batteries);
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ message: 'Greška prilikom dobavljanja baterija.', error: error.message });
+        }
     }
 
 };
+
+
 export default vetrogeneratorController;

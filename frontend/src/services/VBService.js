@@ -31,7 +31,7 @@ export const getV = async (id, token) => {
         return data;
     } catch (error) {
         console.error(error);
-        throw new Error('Greška prilikom kreiranja vetrogeneratora i baterije.');
+        throw new Error('Greška prilikom dobavljanja vetrogeneratora.');
     }
 };
 
@@ -47,6 +47,6 @@ export const getB = async (id, token) => {
         return data;
     } catch (error) {
         console.error(error);
-        throw new Error('Greška prilikom kreiranja vetrogeneratora i baterije.');
+        throw new Error('Greška prilikom dobavljanja baterija.');
     }
 };

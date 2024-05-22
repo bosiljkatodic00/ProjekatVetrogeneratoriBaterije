@@ -5,6 +5,7 @@ import mongoose from 'mongoose';
 import UserModel from './models/User.js';
 import authRoutes from './routes/authRoutes.js';
 import vetrogeneratorRoutes from './routes/vetrogeneratorRoutes.js';
+import userRoutes from './routes/userRoutes.js';
 
 // Initialize Express app
 const app = express();
@@ -20,6 +21,7 @@ app.get('/', (req, res) => {
 });
 app.use('/auth', authRoutes);
 app.use('/vb', vetrogeneratorRoutes);
+app.use('/user', userRoutes);
 
 // Connect to MongoDB
 mongoose.connect('mongodb://localhost:27017/vbDatabase', { useNewUrlParser: true, useUnifiedTopology: true })

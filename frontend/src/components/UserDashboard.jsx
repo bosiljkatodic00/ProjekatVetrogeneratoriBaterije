@@ -78,53 +78,64 @@ const UserDashboard = () => {
 
 
     return (
-        <div style={{ textAlign: 'center', backgroundImage: `url(${backgroundImage})`, backgroundSize: 'cover', backgroundPosition: 'center', minHeight: '95vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-            <Box sx={{ bgcolor: 'rgba(255, 255, 255, 0.7)', p: 3, borderRadius: 5 }}>
-                <Typography variant="h5" color='primary' gutterBottom>
-                    Dobrodošli na User Dashboard!
-                </Typography>
-                <Typography variant="body1" color='primary' paragraph>
-                    Unesite podatke o vetrogeneratoru i bateriji:
-                </Typography>
-                <Map onMapClick={handleMapClick} />
-                <form onSubmit={handleSubmitVetrogeneratorBaterija}>
-                    {/* Forma za kreiranje vetrogeneratora */}
-                    <Typography variant="body1" color='primary' paragraph>
-                        Podaci o vetrogeneratoru:
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', backgroundImage: `url(${backgroundImage})`, backgroundSize: 'cover' }}>
+            <Box sx={{ bgcolor: 'rgba(255, 255, 255, 0.7)', p: 3, borderRadius: 5, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <Box style={{ marginBottom: 20 }}>
+                    <Typography variant="h5" color='primary' gutterBottom>
+                        Dobrodošli na User Dashboard!
                     </Typography>
-                    <TextField
-                        label="Nominalna snaga"
-                        variant="outlined"
-                        name="nominalnaSnagaV"
-                        value={formData.nominalnaSnagaV}
-                        onChange={handleChange}
-                        fullWidth
-                        margin="normal"
-                        InputLabelProps={{
-                            shrink: true,
-                        }}
-                    />
-                    <Typography variant="body1" color='primary' paragraph>
-                        Podaci o bateriji:
-                    </Typography>
-                    <TextField
-                        label="Kapacitet baterije"
-                        variant="outlined"
-                        name="kapacitetB"
-                        value={formData.kapacitetB}
-                        onChange={handleChange}
-                        fullWidth
-                        margin="normal"
-                        InputLabelProps={{
-                            shrink: true,
-                        }}
-                    />
-                    <Button type="submit" variant="contained" color="primary" fullWidth>
-                        Kreiraj
-                    </Button>
-                </form>
-                
-                <UserOverview />
+                </Box>
+                <Box style={{ marginBottom: 20, display: 'flex', width: '100%' }}>
+                    <Box style={{ marginRight: 20, flex: 1 }}>
+                        <UserOverview />
+                    </Box>
+                    <Box style={{ flex: 1 }}>
+                        <Box style={{ marginBottom: 20, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <Typography variant="h5" color='primary' gutterBottom>
+                                Dodaj novi sistem
+                            </Typography>
+                        </Box>
+                        <Typography variant="body1" color='primary' paragraph>
+                            Unesite podatke o vetrogeneratoru i bateriji:
+                        </Typography>
+                        <Map onMapClick={handleMapClick} />
+                        <form onSubmit={handleSubmitVetrogeneratorBaterija}>
+                            <Typography variant="body1" color='primary' paragraph>
+                                Podaci o vetrogeneratoru:
+                            </Typography>
+                            <TextField
+                                label="Nominalna snaga"
+                                variant="outlined"
+                                name="nominalnaSnagaV"
+                                value={formData.nominalnaSnagaV}
+                                onChange={handleChange}
+                                fullWidth
+                                margin="normal"
+                                InputLabelProps={{
+                                    shrink: true,
+                                }}
+                            />
+                            <Typography variant="body1" color='primary' paragraph>
+                                Podaci o bateriji:
+                            </Typography>
+                            <TextField
+                                label="Kapacitet baterije"
+                                variant="outlined"
+                                name="kapacitetB"
+                                value={formData.kapacitetB}
+                                onChange={handleChange}
+                                fullWidth
+                                margin="normal"
+                                InputLabelProps={{
+                                    shrink: true,
+                                }}
+                            />
+                            <Button type="submit" variant="contained" color="primary" fullWidth>
+                                Kreiraj
+                            </Button>
+                        </form>
+                    </Box>
+                </Box>
             </Box>
         </div>
     );
