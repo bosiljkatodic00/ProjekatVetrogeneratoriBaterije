@@ -36,7 +36,6 @@ const UserOverview = ({ refreshData }) => {
           setVetrogenerators(responseV);
           setBatteries(responseB);
           
-          alert('Podaci uspješno dobavljeni.');
         } catch (error) {
           console.error('Greška prilikom dobavljanja podataka:', error);
           alert('Došlo je do greške prilikom dobavljanja podataka.');
@@ -48,11 +47,16 @@ const UserOverview = ({ refreshData }) => {
   }, [refreshData]);
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'space-around', alignItems: 'center', marginBottom: '20px' }}>
+
+    <div style={{ display: 'table' }}>
+      <div style={{display: 'flex', flexDirection: 'row', alignItems: 'centre', justifyContent: 'center'}}>
+        <Map vetrogenerators={vetrogenerators} batteries={batteries} isClickable={false} />
+
+      </div>
       <div style={{ display: 'flex' }}>
+        
         <div>
-          <Typography variant="h5" gutterBottom color='primary' >Vaši vetrogeneratori:</Typography>
-          <Map vetrogenerators={vetrogenerators} batteries={batteries} isClickable={false} />
+          <Typography variant="h5" gutterBottom color='primary' style={{display: 'flex', flexDirection: 'row', alignItems: 'centre', justifyContent: 'center'}} >Vaši vetrogeneratori:</Typography>
           <TableContainer component={Paper}>
             <Table>
               <TableHead>
@@ -74,7 +78,7 @@ const UserOverview = ({ refreshData }) => {
         </div>
 
         <div>
-          <Typography variant="h5" gutterBottom color='primary' >Vaše baterije:</Typography>
+          <Typography variant="h5" gutterBottom color='primary' style={{display: 'flex', flexDirection: 'row', alignItems: 'centre', justifyContent: 'center'}} >Vaše baterije:</Typography>
           <TableContainer component={Paper}>
             <Table>
               <TableHead>

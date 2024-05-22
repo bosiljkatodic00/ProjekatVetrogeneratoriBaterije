@@ -43,7 +43,6 @@ const AdminDashboard = () => {
               setVetrogenerators(responseV);
               setBatteries(responseB);
               
-              alert('Podaci uspješno dobavljeni.');
             } catch (error) {
               console.error('Greška prilikom dobavljanja podataka:', error);
               alert('Došlo je do greške prilikom dobavljanja podataka.');

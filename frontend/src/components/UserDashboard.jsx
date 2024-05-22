@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import Map  from './Map';
+import Map from './Map';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
 import { useTheme } from '@mui/material/styles';
 import backgroundImage from '../images/photo.jpg'; // Putanja do pozadinske slike
+import backgroundImage2 from '../images/landscape.jpg'; // Putanja do pozadinske slike
+
 import { createVB } from '../services/VBService';
 import UserOverview from './UserOverview';
 
@@ -70,7 +72,7 @@ const UserDashboard = () => {
             alert('Greška prilikom kreiranja vetrogeneratora i baterije.');
         }
     };
-    
+
     const handleChange = (e) => {
         setFormData({
             ...formData,
@@ -85,67 +87,75 @@ const UserDashboard = () => {
 
 
     return (
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', backgroundImage: `url(${backgroundImage})`, backgroundSize: 'cover' }}>
-            <Box sx={{ bgcolor: 'rgba(255, 255, 255, 0.7)', p: 3, borderRadius: 5, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                <Box style={{ marginBottom: 20 }}>
-                    <Typography variant="h5" color='primary' gutterBottom>
+        <div>
+
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', backgroundImage: `url(${backgroundImage})`, backgroundSize: 'cover', padding: '20px', backgroundRepeat: 'repeat-y' }}>
+                <Box sx={{ bgcolor: 'rgba(255, 255, 255, 0.6)', p: 3, borderRadius: 5, marginTop: '10px',  width: '60%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                    <Typography variant="h4" color='primary' gutterBottom>
                         Dobrodošli na User Dashboard!
                     </Typography>
-                </Box>
-                <Box style={{ marginBottom: 20, display: 'flex', width: '100%' }}>
-                    <Box style={{ marginRight: 20, flex: 1 }}>
+                    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
                         <UserOverview refreshData={handleRefreshData} />
+
                     </Box>
-                    <Box style={{ flex: 1 }}>
-                        <Box style={{ marginBottom: 20, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                            <Typography variant="h5" color='primary' gutterBottom>
-                                Dodaj novi sistem
-                            </Typography>
-                        </Box>
-                        <Typography variant="body1" color='primary' paragraph>
+                </Box>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', backgroundImage: `url(${backgroundImage})`, backgroundSize: 'cover' }}>
+                <Box sx={{ bgcolor: 'rgba(255, 255, 255, 0.6)', p: 3, height: '95%', borderRadius: 5, marginTop: '20px', width: '60%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+
+                    <Box sx={{ width: '100%' }}>
+                        <Typography variant="h5" color='primary' gutterBottom align="center">
+                            Dodaj novi sistem
+                        </Typography>
+                        <Typography variant="body1" color='primary' paragraph align="center">
                             Unesite podatke o vetrogeneratoru i bateriji:
                         </Typography>
-                        <Map onMapClick={handleMapClick} isClickable={true}/>
-                        <form onSubmit={handleSubmitVetrogeneratorBaterija}>
-                            <Typography variant="body1" color='primary' paragraph>
-                                Podaci o vetrogeneratoru:
-                            </Typography>
-                            <TextField
-                                label="Nominalna snaga"
-                                variant="outlined"
-                                name="nominalnaSnagaV"
-                                value={formData.nominalnaSnagaV}
-                                onChange={handleChange}
-                                fullWidth
-                                margin="normal"
-                                InputLabelProps={{
-                                    shrink: true,
-                                }}
-                            />
-                            <Typography variant="body1" color='primary' paragraph>
-                                Podaci o bateriji:
-                            </Typography>
-                            <TextField
-                                label="Kapacitet baterije"
-                                variant="outlined"
-                                name="kapacitetB"
-                                value={formData.kapacitetB}
-                                onChange={handleChange}
-                                fullWidth
-                                margin="normal"
-                                InputLabelProps={{
-                                    shrink: true,
-                                }}
-                            />
-                            <Button type="submit" variant="contained" color="primary" fullWidth>
-                                Kreiraj
-                            </Button>
-                        </form>
+                        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
+                            <Map onMapClick={handleMapClick} isClickable={true} />
+                            <form onSubmit={handleSubmitVetrogeneratorBaterija} style={{ width: '100%', marginTop: '20px' }}>
+                                <Typography variant="body1" color='primary' paragraph>
+                                    Podaci o vetrogeneratoru:
+                                </Typography>
+                                <TextField
+                                    label="Nominalna snaga"
+                                    variant="outlined"
+                                    name="nominalnaSnagaV"
+                                    value={formData.nominalnaSnagaV}
+                                    onChange={handleChange}
+                                    fullWidth
+                                    margin="normal"
+                                    InputLabelProps={{
+                                        shrink: true,
+                                    }}
+                                />
+                                <Typography variant="body1" color='primary' paragraph>
+                                    Podaci o bateriji:
+                                </Typography>
+                                <TextField
+                                    label="Kapacitet baterije"
+                                    variant="outlined"
+                                    name="kapacitetB"
+                                    value={formData.kapacitetB}
+                                    onChange={handleChange}
+                                    fullWidth
+                                    margin="normal"
+                                    InputLabelProps={{
+                                        shrink: true,
+                                    }}
+                                />
+                                <Button type="submit" variant="contained" color="primary" fullWidth sx={{ mt: 2 }}>
+                                    Kreiraj
+                                </Button>
+                            </form>
+                        </Box>
                     </Box>
                 </Box>
-            </Box>
+
+            </div>
         </div>
+
     );
 };
+
 
 export default UserDashboard;

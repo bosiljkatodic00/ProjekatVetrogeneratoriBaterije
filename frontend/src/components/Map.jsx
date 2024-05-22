@@ -4,7 +4,7 @@ import { GoogleMap, useLoadScript, MarkerF } from '@react-google-maps/api';
 const libraries = ['places'];
 const mapContainerStyle = {
   width: '50vw',
-  height: '30vh',
+  height: '40vh',
 };
 const center = {
   lat: 44.787197, // default latitude
