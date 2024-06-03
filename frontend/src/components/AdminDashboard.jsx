@@ -18,6 +18,7 @@ import TextField from '@mui/material/TextField';
 import { FormControl } from '@mui/material';
 import { getUsers, blockUser, deleteV, deleteB, getV, getB, updateV, updateB, updateSettings, getSettings } from '../services/AdminService';
 import Map from './Map'; // Importujte Map komponentu iz userdashboard
+import Weather from './Weather';
 
 const AdminDashboard = () => {
     const [users, setUsers] = useState([]);
@@ -145,7 +146,7 @@ const AdminDashboard = () => {
     };
 
     const handleSubmit = async () => {
-         try {
+        try {
             await updateSettings(vmin, vfull, vmax, token);
             alert(`Postavke su uspešno ažurirane: Vmin=${vmin}, Vfull=${vfull}, Vmax=${vmax}`);
         } catch (error) {
@@ -156,39 +157,46 @@ const AdminDashboard = () => {
     return (
         <Box sx={{ padding: 3 }}>
             <Typography variant="h4" gutterBottom>Admin Dashboard</Typography>
-            <Typography variant="h5" gutterBottom>
-                    Podaci potrebni za početak rada sistema:
-            </Typography>
-            <FormControl component="fieldset" sx={{ display: 'flex', flexDirection: 'row', gap: 2 }}>
-                    <TextField
-                        id="vmin"
-                        label="Vmin"
-                        variant="outlined"
-                        value={vmin}
-                        onChange={(e) => setVmin(e.target.value)}
-                        sx={{ marginBottom: 1, marginTop: 1 }}
-                    />
-                    <TextField
-                        id="vfull"
-                        label="Vfull"
-                        variant="outlined"
-                        value={vfull}
-                        onChange={(e) => setVfull(e.target.value)}
-                        sx={{ marginBottom: 1, marginTop: 1 }}
-                    />
-                    <TextField
-                        id="vmax"
-                        label="Vmax"
-                        variant="outlined"
-                        value={vmax}
-                        onChange={(e) => setVmax(e.target.value)}
-                        sx={{ marginBottom: 1, marginTop: 1 }}
-                    />
-                    <Button sx={{ width: '200px', height: '55px', marginBottom: 1, marginTop: 1 }} variant="contained" color="primary" onClick={handleSubmit}>
-                        Podesi
-                    </Button>
-                </FormControl>
-            <Box sx={{ marginBottom: 5 }}>
+            <Box sx={{ display: 'flex',  alignItems: 'center', justifyContent: 'space-between', flexDirection: 'row', gap: 2 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 2, marginTop: 2}}>
+                    <Weather />
+                </Box>
+                <Box>
+
+                    <Typography variant="h5" gutterBottom>Podaci potrebni za početak rada sistema:</Typography>
+                    <FormControl component="fieldset" sx={{ display: 'flex', flexDirection: 'row', gap: 2 }}>
+                        <TextField
+                            id="vmin"
+                            label="Vmin"
+                            variant="outlined"
+                            value={vmin}
+                            onChange={(e) => setVmin(e.target.value)}
+                            sx={{ marginBottom: 1, marginTop: 1 }}
+                        />
+                        <TextField
+                            id="vfull"
+                            label="Vfull"
+                            variant="outlined"
+                            value={vfull}
+                            onChange={(e) => setVfull(e.target.value)}
+                            sx={{ marginBottom: 1, marginTop: 1 }}
+                        />
+                        <TextField
+                            id="vmax"
+                            label="Vmax"
+                            variant="outlined"
+                            value={vmax}
+                            onChange={(e) => setVmax(e.target.value)}
+                            sx={{ marginBottom: 1, marginTop: 1 }}
+                        />
+                        <Button sx={{ width: '200px', height: '55px', marginBottom: 1, marginTop: 1 }} variant="contained" color="primary" onClick={handleSubmit}>
+                            Podesi
+                        </Button>
+                    </FormControl>
+                </Box>
+
+            </Box>
+            <Box sx={{ marginBottom: 5, marginTop:3 }}>
                 <Typography variant="h5" gutterBottom>Svi korisnici</Typography>
                 <TableContainer component={Paper}>
                     <Table>
@@ -221,7 +229,7 @@ const AdminDashboard = () => {
                     </Table>
                 </TableContainer>
             </Box>
-            <Box sx={{display: 'flex', flexDirection: 'row', alignItems: 'centre', justifyContent: 'center'}}>
+            <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'centre', justifyContent: 'center' }}>
                 <Map vetrogenerators={vetrogenerators} isClickable={false} />
             </Box>
             <Box sx={{ marginBottom: 5 }}>

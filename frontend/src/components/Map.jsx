@@ -4,8 +4,8 @@ import { GoogleMap, useLoadScript, MarkerF, InfoWindowF  } from '@react-google-m
 const libraries = ['places'];
 
 const mapContainerStyle = {
-  width: '60vw',
-  height: '50vh',
+  width: '50vw',
+  height: '40vh',
 };
 
 const center = {

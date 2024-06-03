@@ -22,13 +22,13 @@ const Header = ({ isAuth, userType, handleLogout }) => {
   return (
     <div
       style={{
-        height: '50px',
+        height: '60px',
         width: '100%',
         textAlign: 'center',
         backgroundColor: '#135D66'
       }}
     >
-      <ButtonGroup spacing="0.5rem" aria-label="spacing button group" sx={{ m: 0.5 }}>
+      <ButtonGroup spacing="0.5rem" aria-label="spacing button group" sx={{ marginTop: 0.3, marginBottom: 1 }}>
         {!isAuth && (
           <HeaderButton
             sx={{ m: 1 }}
