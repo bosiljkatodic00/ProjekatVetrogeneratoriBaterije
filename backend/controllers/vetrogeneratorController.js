@@ -1,5 +1,6 @@
 import VetrogeneratorModel from '../models/Vetrogenerator.js';
 import BaterijaModel from '../models/Baterija.js';
+import SettingModel from '../models/Setting.js';
 
 const vetrogeneratorController = {
     createVB: async (req, res) => {
@@ -119,6 +120,35 @@ const vetrogeneratorController = {
             res.status(200).json(updatedBaterija);
         } catch (error) {
             res.status(500).json({ message: 'Greška prilikom ažuriranja baterije.', error });
+        }
+    },
+
+    updateSettings: async (req, res) => {
+        const { vmin, vfull, vmax } = req.body;
+    
+        try {
+            let settings = await SettingModel.findOne();
+            if (!settings) {
+                settings = new SettingModel({ vmin, vfull, vmax });
+            } else {
+                settings.vmin = vmin;
+                settings.vfull = vfull;
+                settings.vmax = vmax;
+            }
+            
+            await settings.save();
+            res.status(200).json({ message: 'Postavke su uspešno ažurirane.' });
+        } catch (error) {
+            res.status(500).json({ message: 'Greška prilikom ažuriranja postavki.', error });
+        }
+    },
+
+    getSettings : async (req, res) => {
+        try {
+            const settings = await SettingModel.findOne();
+            res.status(200).json(settings);
+        } catch (error) {
+            res.status(500).json({ message: 'Greška prilikom dobijanja postavki.', error });
         }
     }
 

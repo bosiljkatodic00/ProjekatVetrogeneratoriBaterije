@@ -15,7 +15,8 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
-import { getUsers, blockUser, deleteV, deleteB, getV, getB, updateV, updateB } from '../services/AdminService';
+import { FormControl } from '@mui/material';
+import { getUsers, blockUser, deleteV, deleteB, getV, getB, updateV, updateB, updateSettings, getSettings } from '../services/AdminService';
 
 const AdminDashboard = () => {
     const [users, setUsers] = useState([]);
@@ -26,6 +27,10 @@ const AdminDashboard = () => {
     const [open, setOpen] = useState(false);
     const [currentVB, setCurrentVB] = useState({});
     const [isEditingV, setIsEditingV] = useState(true);
+
+    const [vmin, setVmin] = useState('');
+    const [vfull, setVfull] = useState('');
+    const [vmax, setVmax] = useState('');
 
     useEffect(() => {
         const tokenFromStorage = sessionStorage.getItem('token');
@@ -38,10 +43,13 @@ const AdminDashboard = () => {
         const fetchData = async () => {
             if (token) {
                 try {
-                    const [responseU, responseV, responseB] = await Promise.all([getUsers(token), getV(token), getB(token)]);
+                    const [responseU, responseV, responseB, responseSettings] = await Promise.all([getUsers(token), getV(token), getB(token), getSettings(token)]);
                     setUsers(responseU);
                     setVetrogenerators(responseV);
                     setBatteries(responseB);
+                    setVmin(responseSettings.vmin);
+                    setVfull(responseSettings.vfull);
+                    setVmax(responseSettings.vmax);
                 } catch (error) {
                     console.error('Greška prilikom dobavljanja podataka:', error);
                     alert('Došlo je do greške prilikom dobavljanja podataka.');
@@ -135,9 +143,50 @@ const AdminDashboard = () => {
         handleCloseUpdateModal();
     };
 
+    const handleSubmit = async () => {
+         try {
+            await updateSettings(vmin, vfull, vmax, token);
+            alert(`Postavke su uspešno ažurirane: Vmin=${vmin}, Vfull=${vfull}, Vmax=${vmax}`);
+        } catch (error) {
+            alert('Greška prilikom ažuriranja postavki.');
+        }
+    };
+
     return (
         <Box sx={{ padding: 3 }}>
             <Typography variant="h4" gutterBottom>Admin Dashboard</Typography>
+            <Typography variant="h5" gutterBottom>
+                    Podaci potrebni za početak rada sistema:
+            </Typography>
+            <FormControl component="fieldset" sx={{ display: 'flex', flexDirection: 'row', gap: 2 }}>
+                    <TextField
+                        id="vmin"
+                        label="Vmin"
+                        variant="outlined"
+                        value={vmin}
+                        onChange={(e) => setVmin(e.target.value)}
+                        sx={{ marginBottom: 1, marginTop: 1 }}
+                    />
+                    <TextField
+                        id="vfull"
+                        label="Vfull"
+                        variant="outlined"
+                        value={vfull}
+                        onChange={(e) => setVfull(e.target.value)}
+                        sx={{ marginBottom: 1, marginTop: 1 }}
+                    />
+                    <TextField
+                        id="vmax"
+                        label="Vmax"
+                        variant="outlined"
+                        value={vmax}
+                        onChange={(e) => setVmax(e.target.value)}
+                        sx={{ marginBottom: 1, marginTop: 1 }}
+                    />
+                    <Button   sx={{ width: '200px', height: '55px', marginBottom: 1, marginTop: 1 }} variant="contained" color="primary" onClick={handleSubmit}>
+                        Podesi
+                    </Button>
+                </FormControl>
             <Box sx={{ marginBottom: 5 }}>
                 <Typography variant="h5" gutterBottom>Svi korisnici</Typography>
                 <TableContainer component={Paper}>

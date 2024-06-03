@@ -125,3 +125,32 @@ export const updateB = async (bId, data, token) => {
     }
 };
 
+export const updateSettings = async (vmin, vfull, vmax, token) => {
+    try {
+        const response = await axios.put(`${baseUrl}/vb/settingsUpdate`, { vmin, vfull, vmax }, {
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`
+            }
+        });
+        return response.data;
+    } catch (error) {
+        console.error(error);
+        throw new Error('Greška prilikom ažuriranja postavki.');
+    }
+};
+
+export const getSettings = async (token) => {
+    try {
+        const { data } = await axios.get(`${baseUrl}/vb/settingsGet`, {
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`
+            }
+        });
+        return data;
+    } catch (error) {
+        console.error(error);
+        throw new Error('Greška prilikom dobavljanja postavki.');
+    }
+};
