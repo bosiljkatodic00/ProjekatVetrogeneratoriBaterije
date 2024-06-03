@@ -95,9 +95,9 @@ export const deleteB = async (bId, token) => {
     }
 };
 
-export const updateVB = async (vbId, data, token) => {
+export const updateV = async (vId, data, token) => {
     try {
-        const response = await axios.put(`${baseUrl}/vb/${vbId}`, data, {
+        const response = await axios.put(`${baseUrl}/vb/updateV/${vId}`, data, {
             headers: {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${token}`
@@ -106,6 +106,22 @@ export const updateVB = async (vbId, data, token) => {
         return response.data;
     } catch (error) {
         console.error(error);
-        throw new Error('Greška prilikom izmjene vetrogeneratora/baterije.');
+        throw new Error('Greška prilikom izmjene vetrogeneratora.');
     }
 };
+
+export const updateB = async (bId, data, token) => {
+    try {
+        const response = await axios.put(`${baseUrl}/vb/updateB/${bId}`, data, {
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`
+            }
+        });
+        return response.data;
+    } catch (error) {
+        console.error(error);
+        throw new Error('Greška prilikom izmjene baterije.');
+    }
+};
+

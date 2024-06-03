@@ -11,5 +11,7 @@ router.get('/allVetrogenerators', VerifyToken, vetrogeneratorController.getAllVe
 router.get('/allBatteries', VerifyToken, vetrogeneratorController.getAllBatteries);
 router.delete('/deleteV/:vId', VerifyToken, vetrogeneratorController.deleteVetrogenerator);
 router.delete('/deleteB/:bId', VerifyToken, vetrogeneratorController.deleteBaterija);
+router.put('/updateV/:vId', VerifyToken, vetrogeneratorController.updateVetrogenerator);
+router.put('/updateB/:bId', VerifyToken, vetrogeneratorController.updateBaterija);
 
 export default router;

@@ -10,9 +10,12 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import { getUsers, blockUser, deleteV, deleteB, updateVB } from '../services/AdminService';
-import { getV } from '../services/AdminService';
-import { getB } from '../services/AdminService';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import TextField from '@mui/material/TextField';
+import { getUsers, blockUser, deleteV, deleteB, getV, getB, updateV, updateB } from '../services/AdminService';
 
 const AdminDashboard = () => {
     const [users, setUsers] = useState([]);
@@ -20,38 +23,33 @@ const AdminDashboard = () => {
     const [batteries, setBatteries] = useState([]);
     const [token, setToken] = useState(null);
 
+    const [open, setOpen] = useState(false);
+    const [currentVB, setCurrentVB] = useState({});
+    const [isEditingV, setIsEditingV] = useState(true);
+
     useEffect(() => {
         const tokenFromStorage = sessionStorage.getItem('token');
-
         if (tokenFromStorage) {
-          setToken(tokenFromStorage);
+            setToken(tokenFromStorage);
         }
-      }, []);
+    }, []);
 
-      useEffect(() => {
+    useEffect(() => {
         const fetchData = async () => {
-          if (token) {
-            try {
-              // Preuzimanje korisnika, vetrogeneratora i baterija paralelno
-              const [responseU, responseV, responseB] = await Promise.all([
-                getUsers(token),
-                getV(token),
-                getB(token)
-              ]);
-              
-              setUsers(responseU)
-              setVetrogenerators(responseV);
-              setBatteries(responseB);
-              
-            } catch (error) {
-              console.error('Greška prilikom dobavljanja podataka:', error);
-              alert('Došlo je do greške prilikom dobavljanja podataka.');
+            if (token) {
+                try {
+                    const [responseU, responseV, responseB] = await Promise.all([getUsers(token), getV(token), getB(token)]);
+                    setUsers(responseU);
+                    setVetrogenerators(responseV);
+                    setBatteries(responseB);
+                } catch (error) {
+                    console.error('Greška prilikom dobavljanja podataka:', error);
+                    alert('Došlo je do greške prilikom dobavljanja podataka.');
+                }
             }
-          }
         };
-      
         fetchData();
-      }, [token]);
+    }, [token]);
 
     const handleBlockUser = async (userId) => {
         try {
@@ -86,16 +84,55 @@ const AdminDashboard = () => {
         }
     };
 
-
-    const handleUpdateVB = async (vbId, data) => {
+    const handleUpdateV = async (vId, data) => {
         try {
-            await updateVB(vbId, data, token);
-            alert('Uspješno ažurirano.');
+            const updatedVetrogenerator = await updateV(vId, data, token);
+            setVetrogenerators(vetrogenerators.map(vb => vb._id === vId ? updatedVetrogenerator : vb));
+            alert('Vetrogenerator uspješno ažuriran.');
             // Osvježite podatke ili upravljajte stanjem prema potrebi
         } catch (error) {
-            console.error('Greška prilikom ažuriranja:', error);
-            alert('Neuspješno ažuriranje.');
+            console.error('Greška prilikom ažuriranja vetrogeneratora:', error);
+            alert('Neuspješno ažuriranje vetrogeneratora.');
         }
+    };
+
+    const handleUpdateB = async (bId, data) => {
+        try {
+            const updatedBaterija = await updateB(bId, data, token);
+            setBatteries(batteries.map(b => b._id === bId ? updatedBaterija : b));
+            alert('Baterija uspješno ažurirana.');
+            // Osvježite podatke ili upravljajte stanjem prema potrebi
+        } catch (error) {
+            console.error('Greška prilikom ažuriranja baterije:', error);
+            alert('Neuspješno ažuriranje baterije.');
+        }
+    };
+
+    const handleOpenUpdateModal = (vb, isVetrogenerator) => {
+        setCurrentVB(vb);
+        setIsEditingV(isVetrogenerator);
+        setOpen(true);
+    };
+
+    const handleCloseUpdateModal = () => {
+        setOpen(false);
+        setCurrentVB({});
+    };
+
+    const handleChange = (e) => {
+        setCurrentVB({
+            ...currentVB,
+            [e.target.name]: e.target.value,
+        });
+    };
+
+    const handleSubmitUpdate = async () => {
+        if (isEditingV) {
+            await handleUpdateV(currentVB._id, currentVB);
+        } else {
+            await handleUpdateB(currentVB._id, currentVB);
+        }
+        handleCloseUpdateModal();
     };
 
     return (
@@ -155,7 +192,7 @@ const AdminDashboard = () => {
                                     <TableCell>{v.trenutnaSnagaV}</TableCell>
                                     <TableCell>{v.vlasnik}</TableCell>
                                     <TableCell>
-                                        <Button variant="contained" color="primary" onClick={() => handleUpdateVB(v._id, {/* pass data here */})}>
+                                        <Button variant="contained" color="primary" onClick={() => handleOpenUpdateModal(v, true)}>
                                             Izmijeni
                                         </Button>
                                         <Button variant="contained" color="secondary" onClick={() => handleDeleteV(v._id)}>
@@ -199,7 +236,7 @@ const AdminDashboard = () => {
                                     <TableCell>{b.t2}</TableCell>
                                     <TableCell>{b.stanje}</TableCell>
                                     <TableCell>
-                                        <Button variant="contained" color="primary" onClick={() => handleUpdateVB(b._id, {/* pass data here */})}>
+                                        <Button variant="contained" color="primary" onClick={() => handleOpenUpdateModal(b, false)}>
                                             Izmijeni
                                         </Button>
                                         <Button variant="contained" color="secondary" onClick={() => handleDeleteB(b._id)}>
@@ -212,6 +249,56 @@ const AdminDashboard = () => {
                     </Table>
                 </TableContainer>
             </Box>
+            <Dialog open={open} onClose={handleCloseUpdateModal}>
+                <DialogTitle>{isEditingV ? "Ažuriraj Vetrogenerator" : "Ažuriraj Bateriju"}</DialogTitle>
+                <DialogContent>
+                    {isEditingV ? (
+                        <>
+                            <TextField
+                                margin="dense"
+                                name="nominalnaSnagaV"
+                                label="Nominalna snaga"
+                                type="number"
+                                fullWidth
+                                variant="standard"
+                                value={currentVB.nominalnaSnagaV || ""}
+                                onChange={handleChange}
+                            />
+                        </>
+                    ) : (
+                        <>
+                            <TextField
+                                margin="dense"
+                                name="t1"
+                                label="t1 baterije"
+                                type="number"
+                                fullWidth
+                                variant="standard"
+                                value={currentVB.t1 || ""}
+                                onChange={handleChange}
+                            />
+                            <TextField
+                                margin="dense"
+                                name="t2"
+                                label="t2 baterije"
+                                type="number"
+                                fullWidth
+                                variant="standard"
+                                value={currentVB.t2 || ""}
+                                onChange={handleChange}
+                            />
+                        </>
+                    )}
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseUpdateModal} color="secondary">
+                        Otkaži
+                    </Button>
+                    <Button onClick={handleSubmitUpdate} color="primary">
+                        Ažuriraj
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Box>
     );
 };

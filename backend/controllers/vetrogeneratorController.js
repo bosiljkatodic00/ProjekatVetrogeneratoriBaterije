@@ -90,6 +90,36 @@ const vetrogeneratorController = {
             console.error('Greška prilikom brisanja baterije:', error);
             res.status(500).json({ message: 'Greška prilikom brisanja baterije.' });
         }
+    },
+
+    // Funkcija za ažuriranje vetrogeneratora
+    updateVetrogenerator: async (req, res) => {
+        const { vId } = req.params;
+        const updateData = req.body;
+        try {
+            const updatedVetrogenerator = await VetrogeneratorModel.findByIdAndUpdate(vId, updateData, { new: true });
+            if (!updatedVetrogenerator) {
+                return res.status(404).json({ message: 'Vetrogenerator nije pronađen.' });
+            }
+            res.status(200).json(updatedVetrogenerator);
+        } catch (error) {
+            res.status(500).json({ message: 'Greška prilikom ažuriranja vetrogeneratora.', error });
+        }
+    },
+
+    // Funkcija za ažuriranje baterije
+    updateBaterija: async (req, res) => {
+        const { bId } = req.params;
+        const updateData = req.body;
+        try {
+            const updatedBaterija = await BaterijaModel.findByIdAndUpdate(bId, updateData, { new: true });
+            if (!updatedBaterija) {
+                return res.status(404).json({ message: 'Baterija nije pronađena.' });
+            }
+            res.status(200).json(updatedBaterija);
+        } catch (error) {
+            res.status(500).json({ message: 'Greška prilikom ažuriranja baterije.', error });
+        }
     }
 
 };
