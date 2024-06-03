@@ -17,6 +17,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
 import { FormControl } from '@mui/material';
 import { getUsers, blockUser, deleteV, deleteB, getV, getB, updateV, updateB, updateSettings, getSettings } from '../services/AdminService';
+import Map from './Map'; // Importujte Map komponentu iz userdashboard
 
 const AdminDashboard = () => {
     const [users, setUsers] = useState([]);
@@ -183,7 +184,7 @@ const AdminDashboard = () => {
                         onChange={(e) => setVmax(e.target.value)}
                         sx={{ marginBottom: 1, marginTop: 1 }}
                     />
-                    <Button   sx={{ width: '200px', height: '55px', marginBottom: 1, marginTop: 1 }} variant="contained" color="primary" onClick={handleSubmit}>
+                    <Button sx={{ width: '200px', height: '55px', marginBottom: 1, marginTop: 1 }} variant="contained" color="primary" onClick={handleSubmit}>
                         Podesi
                     </Button>
                 </FormControl>
@@ -219,6 +220,9 @@ const AdminDashboard = () => {
                         </TableBody>
                     </Table>
                 </TableContainer>
+            </Box>
+            <Box sx={{display: 'flex', flexDirection: 'row', alignItems: 'centre', justifyContent: 'center'}}>
+                <Map vetrogenerators={vetrogenerators} isClickable={false} />
             </Box>
             <Box sx={{ marginBottom: 5 }}>
                 <Typography variant="h5" gutterBottom>Svi vetrogeneratori</Typography>

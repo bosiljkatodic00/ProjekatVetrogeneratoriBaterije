@@ -7,7 +7,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import Map from './Map'; // Importujte Map komponentu iz userdashboard
+import Map from './Map'; 
 import { getV } from '../services/VBService';
 import { getB } from '../services/VBService';
 
