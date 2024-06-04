@@ -1,16 +1,36 @@
 import VetrogeneratorModel from '../models/Vetrogenerator.js';
 import BaterijaModel from '../models/Baterija.js';
 import SettingModel from '../models/Setting.js';
+import { v4 as uuidv4 } from 'uuid';  // ES6 sintaksa za importovanje uuid
 
 const vetrogeneratorController = {
     createVB: async (req, res) => {
         try {
-            const { vlasnik, lokacija, nominalnaSnagaV, trenutnaSnagaV, kapacitetB, snagaB, trajanjePunjenaB, trajanjePraznjenjaB, napunjenostB, t1, t2 } = req.body;
-            const vetrogenerator = new VetrogeneratorModel({ vlasnik, lokacija, nominalnaSnagaV, trenutnaSnagaV });
-            await vetrogenerator.save();
-            const baterija = new BaterijaModel({ vlasnik, lokacija, kapacitetB, snagaB, trajanjePunjenaB, trajanjePraznjenjaB, napunjenostB, t1, t2 });
-            await baterija.save();
-            res.status(201).json({ message: 'Vetrogenerator i baterija kreirani.' });
+            const systemId = Math.random().toString(36).substring(2, 7);
+            //const systemId = uuidv4(); 
+            const { vlasnik, lokacija, nominalnaSnagaV, trenutnaSnagaV, kapacitetB,
+                    snagaB, trajanjePunjenaB, trajanjePraznjenjaB,
+                    napunjenostB, t1, t2 
+                } = req.body;
+            
+            if(lokacija.coordinates.length == 0)
+                {
+                res.status(500).json({ message: 'Niste izabrali lokaciju.', error: error.message });
+            }
+            else 
+            {
+                const vetrogenerator = new VetrogeneratorModel({
+                    vlasnik, lokacija, nominalnaSnagaV, trenutnaSnagaV, systemId });
+               await vetrogenerator.save();
+   
+               const baterija = new BaterijaModel({
+                    vlasnik, lokacija, kapacitetB, snagaB, trajanjePunjenaB, 
+                    trajanjePraznjenjaB, napunjenostB, t1, t2, systemId });
+               await baterija.save();
+   
+               res.status(201).json({ message: 'Vetrogenerator i baterija kreirani.' });
+            }            
+           
         } catch (error) {
             console.error(error);
             res.status(500).json({ message: 'Greška prilikom kreiranja vetrogeneratora i baterije.', error: error.message });

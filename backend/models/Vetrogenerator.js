@@ -25,6 +25,10 @@ const VetrogeneratorSchema = new Schema({
     trenutnaSnagaV: {
         type: Number,
         default: 0
+    },
+    systemId: {
+        type: String,
+        required: true,
     }
 });
 

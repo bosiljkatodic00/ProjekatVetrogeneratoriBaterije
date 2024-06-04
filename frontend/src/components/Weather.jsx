@@ -32,7 +32,7 @@ const Weather = () => {
   };
 
   return (
-    <div>
+    <div style={{marginTop: 10, marginBottom: 0}}>
       <form onSubmit={handleSubmit}>
         <TextField
           type="text"

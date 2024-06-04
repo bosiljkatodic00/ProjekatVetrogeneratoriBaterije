@@ -155,14 +155,13 @@ const AdminDashboard = () => {
     };
 
     return (
-        <Box sx={{ padding: 3 }}>
+        <Box sx={{ alignItems: 'center', justifyContent: 'center', backgroundColor: '#88bcc3', padding: 3}}>
             <Typography variant="h4" gutterBottom>Admin Dashboard</Typography>
-            <Box sx={{ display: 'flex',  alignItems: 'center', justifyContent: 'space-between', flexDirection: 'row', gap: 2 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 2, marginTop: 2}}>
+            <Box sx={{ display: 'flex',  alignItems: 'center', justifyContent: 'space-between', flexDirection: 'row', gap: 2, backgroundColor: 'white' }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 2, marginTop: 2, marginLeft: 2 }}>
                     <Weather />
                 </Box>
-                <Box>
-
+                <Box sx={{ marginRight: 2 }}>
                     <Typography variant="h5" gutterBottom>Podaci potrebni za početak rada sistema:</Typography>
                     <FormControl component="fieldset" sx={{ display: 'flex', flexDirection: 'row', gap: 2 }}>
                         <TextField
@@ -238,7 +237,8 @@ const AdminDashboard = () => {
                     <Table>
                         <TableHead>
                             <TableRow>
-                                <TableCell>ID</TableCell>
+                            <TableCell>ID sistema</TableCell>
+                                <TableCell>ID vetrogeneratora</TableCell>
                                 <TableCell>Nominalna snaga</TableCell>
                                 <TableCell>Trenutna snaga</TableCell>
                                 <TableCell>Vlasnik ID</TableCell>
@@ -248,6 +248,7 @@ const AdminDashboard = () => {
                         <TableBody>
                             {vetrogenerators.map(v => (
                                 <TableRow key={v._id}>
+                                    <TableCell>{v.systemId}</TableCell>
                                     <TableCell>{v._id}</TableCell>
                                     <TableCell>{v.nominalnaSnagaV}</TableCell>
                                     <TableCell>{v.trenutnaSnagaV}</TableCell>
@@ -271,8 +272,9 @@ const AdminDashboard = () => {
                 <TableContainer component={Paper}>
                     <Table>
                         <TableHead>
-                            <TableRow>
-                                <TableCell>ID</TableCell>
+                            <TableRow>                  
+                                <TableCell>ID sistema</TableCell>
+                                <TableCell>ID baterije</TableCell>
                                 <TableCell>Kapacitet</TableCell>
                                 <TableCell>Vlasnik ID</TableCell>
                                 <TableCell>Napunjenost</TableCell>
@@ -287,6 +289,7 @@ const AdminDashboard = () => {
                         <TableBody>
                             {batteries.map(b => (
                                 <TableRow key={b._id}>
+                                    <TableCell>{b.systemId}</TableCell>
                                     <TableCell>{b._id}</TableCell>
                                     <TableCell>{b.kapacitetB}</TableCell>
                                     <TableCell>{b.vlasnik}</TableCell>

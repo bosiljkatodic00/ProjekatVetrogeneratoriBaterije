@@ -11,6 +11,7 @@ import backgroundImage2 from '../images/landscape.jpg'; // Putanja do pozadinske
 
 import { createVB } from '../services/VBService';
 import UserOverview from './UserOverview';
+import Weather from './Weather';
 
 const UserDashboard = () => {
     const [korisnik, setKorisnik] = useState(null);
@@ -87,20 +88,24 @@ const UserDashboard = () => {
 
 
     return (
-        <div>
-
+        <div style={{ alignItems: 'center', justifyContent: 'center', backgroundColor: '#b3daff', marginTop: -20 }}>
+            <Box sx={{
+                height: '31vh', display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 1, marginTop: 1, marginLeft: 60, marginRight: 60,
+                textAlign: 'center', backgroundColor: '#b3daff'
+            }}>
+                <Box sx={{ bgcolor: 'rgba(255, 255, 255, 0.6)', borderRadius: 5,  width: '100%', alignItems: 'center', marginTop: 1 }}>
+                    <Weather />
+                </Box>
+            </Box>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', backgroundImage: `url(${backgroundImage})`, backgroundSize: 'cover', padding: '20px', backgroundRepeat: 'repeat-y' }}>
-                <Box sx={{ bgcolor: 'rgba(255, 255, 255, 0.6)', p: 3, borderRadius: 5, marginTop: '10px',  width: '60%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                    <Typography variant="h4" color='primary' gutterBottom>
-                        Dobrodošli na User Dashboard!
-                    </Typography>
+                <Box sx={{ bgcolor: 'rgba(255, 255, 255, 0.6)', p: 3, borderRadius: 5, marginTop: '1px', width: '90%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                    
                     <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
                         <UserOverview refreshData={handleRefreshData} />
-
                     </Box>
                 </Box>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', backgroundImage: `url(${backgroundImage})`, backgroundSize: 'cover' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '103vh', backgroundColor: '#b3daff' }}>
                 <Box sx={{ bgcolor: 'rgba(255, 255, 255, 0.6)', p: 3, height: '95%', borderRadius: 5, marginTop: '20px', width: '60%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
 
                     <Box sx={{ width: '100%' }}>

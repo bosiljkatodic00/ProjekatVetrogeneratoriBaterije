@@ -76,7 +76,7 @@ const Map = ({ vetrogenerators, batteries, onMapClick, isClickable }) => {
           >
             <div style={{ maxWidth: '200px' }}>
               <p>VETROGENERATOR INFO:</p>
-              <p>ID: {activeMarker._id}</p>
+              <p>ID sistema: {activeMarker.systemId}</p>
               <p>Nominalna Snaga: {activeMarker.nominalnaSnagaV}</p>
               <p>Trenutna Snaga: {activeMarker.trenutnaSnagaV}</p>
               <p>ID vlasnika: {activeMarker.vlasnik}</p>

@@ -50,6 +50,10 @@ const BaterijaSchema = new Schema({
     t2: {
         type: Number,
         required: true
+    },
+    systemId: {
+        type: String,
+        required: true,
     }
 });
 
