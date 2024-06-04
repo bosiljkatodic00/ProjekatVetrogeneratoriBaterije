@@ -40,7 +40,7 @@ const BaterijaSchema = new Schema({
     },
     stanje: {
         type: String,
-        enum: ['punjenje', 'pražnjenje', 'mirovanje'],
+        enum: ['punjenje', 'praznjenje', 'mirovanje'],
         default: 'mirovanje'
     },
     t1: {

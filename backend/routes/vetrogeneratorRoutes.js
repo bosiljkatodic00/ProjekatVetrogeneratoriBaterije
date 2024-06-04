@@ -21,4 +21,7 @@ router.put('/updateB/:bId', VerifyToken, vetrogeneratorController.updateBaterija
 router.put('/settingsUpdate', VerifyToken, vetrogeneratorController.updateSettings);
 router.get('/settingsGet', VerifyToken, vetrogeneratorController.getSettings);
 
+router.post('/startSystem', VerifyToken, vetrogeneratorController.startSystem);
+//router.post('/stopSystem', VerifyToken, vetrogeneratorController.stopSystem);
+
 export default router;

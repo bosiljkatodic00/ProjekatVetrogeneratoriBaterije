@@ -11,6 +11,8 @@ import Button from '@mui/material/Button';
 import Map from './Map';
 import { getV } from '../services/VBService';
 import { getB } from '../services/VBService';
+import { start } from '../services/VBService';
+import { stop } from '../services/VBService';
 
 const UserOverview = ({ refreshData }) => {
   const [vetrogenerators, setVetrogenerators] = useState([]);
@@ -36,6 +38,9 @@ const UserOverview = ({ refreshData }) => {
           // Postavljanje stanja za vetrogeneratore i baterije
           setVetrogenerators(responseV);
           setBatteries(responseB);
+          if (tokenFromStorage) {
+            setToken(tokenFromStorage);
+          }
 
         } catch (error) {
           console.error('Greška prilikom dobavljanja podataka:', error);
@@ -50,6 +55,7 @@ const UserOverview = ({ refreshData }) => {
   const startSystem = async (systemId) => {
     try {
       // Vaša logika za pokretanje sistema
+      await start(systemId, token);
       console.log(`Pokretanje sistema sa ID-jem: ${systemId}`);
     } catch (error) {
       console.error('Greška prilikom pokretanja sistema:', error);
@@ -60,6 +66,7 @@ const UserOverview = ({ refreshData }) => {
   const stopSystem = async (systemId) => {
     try {
       // Vaša logika za zaustavljanje sistema
+      await stop(systemId, tokenFromStorage);
       console.log(`Zaustavljanje sistema sa ID-jem: ${systemId}`);
     } catch (error) {
       console.error('Greška prilikom zaustavljanja sistema:', error);
@@ -81,7 +88,7 @@ const UserOverview = ({ refreshData }) => {
                 <TableRow>
                   <TableCell>ID sistema</TableCell>
                   <TableCell>ID vetrogeneratora</TableCell>
-                  <TableCell>Snaga vetrogeneratora</TableCell>
+                  <TableCell>Snaga vetrogeneratora [kW]</TableCell>
                   <TableCell>Akcije</TableCell>
                 </TableRow>
               </TableHead>
@@ -92,10 +99,10 @@ const UserOverview = ({ refreshData }) => {
                     <TableCell sx={{ padding: '6px 16px' }}>{vetrogenerator._id}</TableCell>
                     <TableCell sx={{ padding: '6px 16px', alignItems: 'center', justifyContent: 'center' }}>{vetrogenerator.trenutnaSnagaV}</TableCell>
                     <TableCell sx={{ padding: '6px 16px' }}>
-                      <Button size="small" variant="contained" color="primary" onClick={() => handleStart(vetrogenerator.systemId)}>
+                      <Button size="small" variant="contained" color="primary" onClick={() => startSystem(vetrogenerator.systemId)}>
                         Start
                       </Button>
-                      <Button size="small" variant="contained" color="secondary" onClick={() => handleStop(vetrogenerator.systemId)}>
+                      <Button size="small" variant="contained" color="secondary" onClick={() => stopSystem(vetrogenerator.systemId)}>
                         Stop
                       </Button>
                     </TableCell>
@@ -113,7 +120,7 @@ const UserOverview = ({ refreshData }) => {
               <TableHead>
                 <TableRow>
                   <TableCell>ID baterije</TableCell>
-                  <TableCell>Napunjenost baterije [%]</TableCell>
+                  <TableCell>Napunjenost baterije [kWh]</TableCell>
                   <TableCell>Status baterije</TableCell>
                   <TableCell>Akcije</TableCell>
                 </TableRow>
@@ -125,10 +132,10 @@ const UserOverview = ({ refreshData }) => {
                     <TableCell sx={{ padding: '6px 16px', alignItems: 'center', justifyContent: 'center' }}>{battery.napunjenostB}</TableCell>
                     <TableCell sx={{ padding: '6px 16px', alignItems: 'center', justifyContent: 'center' }}>{battery.stanje}</TableCell>
                     <TableCell sx={{ padding: '6px 16px' }}>
-                      <Button size="small" variant="contained" color="primary" onClick={() => handleStart(battery.systemId)}>
+                      <Button size="small" variant="contained" color="primary" onClick={() => startSystem(battery.systemId)}>
                         Start
                       </Button>
-                      <Button size="small" variant="contained" color="secondary" onClick={() => handleStop(battery.systemId)}>
+                      <Button size="small" variant="contained" color="secondary" onClick={() => stopSystem(battery.systemId)}>
                         Stop
                       </Button>
                     </TableCell>

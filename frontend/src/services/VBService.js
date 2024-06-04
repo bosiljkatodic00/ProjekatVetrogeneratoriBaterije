@@ -50,3 +50,37 @@ export const getB = async (id, token) => {
         throw new Error('Greška prilikom dobavljanja baterija.');
     }
 };
+
+export const start = async (id, token) => {
+    try {
+        const { data } = await axios.post(`${baseUrl}/vb/startSystem?id=${id}`,
+        {}, // Prazno telo zahteva
+        {
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`
+            }
+        });
+        return data;
+    } catch (error) {
+        console.error(error);
+        throw new Error('Greška prilikom pokretanja sistema.');
+    }
+}
+
+export const stop = async (id, token) => {
+    try {
+        const { data } = await axios.post(`${baseUrl}/vb/stopSystem?id=${id}`,
+        {}, // Prazno telo zahteva
+        {
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`
+            }
+        });
+        return data;
+    } catch (error) {
+        console.error(error);
+        throw new Error('Greška prilikom zaustavljanja sistema.');
+    }
+}
