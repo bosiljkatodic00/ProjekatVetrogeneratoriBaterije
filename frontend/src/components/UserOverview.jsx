@@ -20,36 +20,40 @@ const UserOverview = ({ refreshData }) => {
   const [korisnik, setKorisnik] = useState(null);
   const [token, setToken] = useState(null);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const userFromStorage = JSON.parse(sessionStorage.getItem('korisnik'));
-      const tokenFromStorage = sessionStorage.getItem('token');
+  const fetchData = async () => {
+    const userFromStorage = JSON.parse(sessionStorage.getItem('korisnik'));
+    const tokenFromStorage = sessionStorage.getItem('token');
 
-      if (userFromStorage && tokenFromStorage) {
-        setKorisnik(userFromStorage);
-        setToken(tokenFromStorage);
+    if (userFromStorage && tokenFromStorage) {
+      setKorisnik(userFromStorage);
+      setToken(tokenFromStorage);
 
-        try {
-          const [responseV, responseB] = await Promise.all([
-            getV(userFromStorage._id, tokenFromStorage),
-            getB(userFromStorage._id, tokenFromStorage)
-          ]);
+      try {
+        const [responseV, responseB] = await Promise.all([
+          getV(userFromStorage._id, tokenFromStorage),
+          getB(userFromStorage._id, tokenFromStorage)
+        ]);
 
-          // Postavljanje stanja za vetrogeneratore i baterije
-          setVetrogenerators(responseV);
-          setBatteries(responseB);
-          if (tokenFromStorage) {
-            setToken(tokenFromStorage);
-          }
-
-        } catch (error) {
-          console.error('Greška prilikom dobavljanja podataka:', error);
-          alert('Došlo je do greške prilikom dobavljanja podataka.');
+        // Postavljanje stanja za vetrogeneratore i baterije
+        setVetrogenerators(responseV);
+        setBatteries(responseB);
+        if (tokenFromStorage) {
+          setToken(tokenFromStorage);
         }
-      }
-    };
 
+      } catch (error) {
+        console.error('Greška prilikom dobavljanja podataka:', error);
+        alert('Došlo je do greške prilikom dobavljanja podataka.');
+      }
+    }
+  };
+
+  useEffect(() => {
     fetchData();
+
+    const intervalId = setInterval(fetchData, 5000); // Fetch data every 5 seconds
+
+    return () => clearInterval(intervalId); // Cleanup on unmount
   }, [refreshData]);
 
   const startSystem = async (systemId) => {
@@ -66,7 +70,7 @@ const UserOverview = ({ refreshData }) => {
   const stopSystem = async (systemId) => {
     try {
       // Vaša logika za zaustavljanje sistema
-      await stop(systemId, tokenFromStorage);
+      await stop(systemId, token);
       console.log(`Zaustavljanje sistema sa ID-jem: ${systemId}`);
     } catch (error) {
       console.error('Greška prilikom zaustavljanja sistema:', error);

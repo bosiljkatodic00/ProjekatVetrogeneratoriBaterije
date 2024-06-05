@@ -22,6 +22,6 @@ router.put('/settingsUpdate', VerifyToken, vetrogeneratorController.updateSettin
 router.get('/settingsGet', VerifyToken, vetrogeneratorController.getSettings);
 
 router.post('/startSystem', VerifyToken, vetrogeneratorController.startSystem);
-//router.post('/stopSystem', VerifyToken, vetrogeneratorController.stopSystem);
+router.post('/stopSystem', VerifyToken, vetrogeneratorController.stopSystem);
 
 export default router;

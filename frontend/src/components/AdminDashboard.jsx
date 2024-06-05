@@ -19,6 +19,8 @@ import { FormControl } from '@mui/material';
 import { getUsers, blockUser, deleteV, deleteB, getV, getB, updateV, updateB, updateSettings, getSettings } from '../services/AdminService';
 import Map from './Map'; // Importujte Map komponentu iz userdashboard
 import Weather from './Weather';
+import { start } from '../services/VBService';
+import { stop } from '../services/VBService';
 
 const AdminDashboard = () => {
     const [users, setUsers] = useState([]);
@@ -58,7 +60,11 @@ const AdminDashboard = () => {
                 }
             }
         };
+
         fetchData();
+        const intervalId = setInterval(fetchData, 5000); // Refresh every 5 seconds
+
+        return () => clearInterval(intervalId); // Clear interval on component unmount
     }, [token]);
 
     const handleBlockUser = async (userId) => {
@@ -154,10 +160,32 @@ const AdminDashboard = () => {
         }
     };
 
+    const startSystem = async (systemId) => {
+        try {
+          // Vaša logika za pokretanje sistema
+          await start(systemId, token);
+          console.log(`Pokretanje sistema sa ID-jem: ${systemId}`);
+        } catch (error) {
+          console.error('Greška prilikom pokretanja sistema:', error);
+          alert('Došlo je do greške prilikom pokretanja sistema.');
+        }
+      };
+    
+      const stopSystem = async (systemId) => {
+        try {
+          // Vaša logika za zaustavljanje sistema
+          await stop(systemId, token);
+          console.log(`Zaustavljanje sistema sa ID-jem: ${systemId}`);
+        } catch (error) {
+          console.error('Greška prilikom zaustavljanja sistema:', error);
+          alert('Došlo je do greške prilikom zaustavljanja sistema.');
+        }
+      };
+
     return (
-        <Box sx={{ alignItems: 'center', justifyContent: 'center', backgroundColor: '#88bcc3', padding: 3}}>
+        <Box sx={{ alignItems: 'center', justifyContent: 'center', backgroundColor: '#88bcc3', padding: 3 }}>
             <Typography variant="h4" gutterBottom>Admin Dashboard</Typography>
-            <Box sx={{ display: 'flex',  alignItems: 'center', justifyContent: 'space-between', flexDirection: 'row', gap: 2, backgroundColor: 'white' }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexDirection: 'row', gap: 2, backgroundColor: 'white' }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 2, marginTop: 2, marginLeft: 2 }}>
                     <Weather />
                 </Box>
@@ -195,7 +223,7 @@ const AdminDashboard = () => {
                 </Box>
 
             </Box>
-            <Box sx={{ marginBottom: 5, marginTop:3 }}>
+            <Box sx={{ marginBottom: 5, marginTop: 3 }}>
                 <Typography variant="h5" gutterBottom>Svi korisnici</Typography>
                 <TableContainer component={Paper}>
                     <Table>
@@ -221,7 +249,7 @@ const AdminDashboard = () => {
                                                 Blokiraj
                                             </Button>
                                         )}
-                                    </TableCell>
+                                    </TableCell>                                    
                                 </TableRow>
                             ))}
                         </TableBody>
@@ -231,13 +259,14 @@ const AdminDashboard = () => {
             <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'centre', justifyContent: 'center' }}>
                 <Map vetrogenerators={vetrogenerators} isClickable={false} />
             </Box>
-            <Box sx={{ marginBottom: 5 }}>
+            <Box>
                 <Typography variant="h5" gutterBottom>Svi vetrogeneratori</Typography>
                 <TableContainer component={Paper}>
                     <Table>
                         <TableHead>
                             <TableRow>
-                            <TableCell>ID sistema</TableCell>
+                                <TableCell>Pokreni/Zaustavi sistem</TableCell>
+                                <TableCell>ID sistema</TableCell>
                                 <TableCell>ID vetrogeneratora</TableCell>
                                 <TableCell>Nominalna snaga</TableCell>
                                 <TableCell>Trenutna snaga</TableCell>
@@ -248,16 +277,24 @@ const AdminDashboard = () => {
                         <TableBody>
                             {vetrogenerators.map(v => (
                                 <TableRow key={v._id}>
+                                    <TableCell>
+                                        <Button size="small" variant="contained" color="primary" onClick={() => startSystem(v.systemId)}>
+                                            Start
+                                        </Button>
+                                        <Button size="small" variant="contained" color="secondary" onClick={() => stopSystem(v.systemId)}>
+                                            Stop
+                                        </Button>
+                                    </TableCell>
                                     <TableCell>{v.systemId}</TableCell>
                                     <TableCell>{v._id}</TableCell>
                                     <TableCell>{v.nominalnaSnagaV}</TableCell>
                                     <TableCell>{v.trenutnaSnagaV}</TableCell>
                                     <TableCell>{v.vlasnik}</TableCell>
                                     <TableCell>
-                                        <Button variant="contained" color="primary" onClick={() => handleOpenUpdateModal(v, true)}>
+                                        <Button size="small" variant="outlined" onClick={() => handleOpenUpdateModal(v, true)}>
                                             Izmijeni
                                         </Button>
-                                        <Button variant="contained" color="secondary" onClick={() => handleDeleteV(v._id)}>
+                                        <Button size="small" variant="outlined" onClick={() => handleDeleteV(v._id)}>
                                             Obriši
                                         </Button>
                                     </TableCell>
@@ -272,7 +309,7 @@ const AdminDashboard = () => {
                 <TableContainer component={Paper}>
                     <Table>
                         <TableHead>
-                            <TableRow>                  
+                            <TableRow>
                                 <TableCell>ID sistema</TableCell>
                                 <TableCell>ID baterije</TableCell>
                                 <TableCell>Kapacitet</TableCell>
@@ -300,10 +337,10 @@ const AdminDashboard = () => {
                                     <TableCell>{b.t2}</TableCell>
                                     <TableCell>{b.stanje}</TableCell>
                                     <TableCell>
-                                        <Button variant="contained" color="primary" onClick={() => handleOpenUpdateModal(b, false)}>
+                                        <Button size="small" variant="outlined" onClick={() => handleOpenUpdateModal(b, false)}>
                                             Izmijeni
                                         </Button>
-                                        <Button variant="contained" color="secondary" onClick={() => handleDeleteB(b._id)}>
+                                        <Button sx={{marginLeft: 0.8 }} size="small" variant="outlined" onClick={() => handleDeleteB(b._id)}>
                                             Obriši
                                         </Button>
                                     </TableCell>
