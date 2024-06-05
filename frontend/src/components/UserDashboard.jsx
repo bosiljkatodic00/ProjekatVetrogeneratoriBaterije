@@ -12,6 +12,8 @@ import backgroundImage2 from '../images/landscape.jpg'; // Putanja do pozadinske
 import { createVB } from '../services/VBService';
 import UserOverview from './UserOverview';
 import Weather from './Weather';
+import HistoricalDataChart from './HistoricalDataChart';
+import { Link } from 'react-router-dom';
 
 const UserDashboard = () => {
     const [korisnik, setKorisnik] = useState(null);
@@ -88,24 +90,24 @@ const UserDashboard = () => {
 
 
     return (
-        <div style={{ alignItems: 'center', justifyContent: 'center', backgroundColor: '#b3daff', marginTop: -20 }}>
+        <div style={{ alignItems: 'center', justifyContent: 'center', backgroundColor: '#88bcc3', marginTop: -20 }}>
             <Box sx={{
                 height: '31vh', display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 1, marginTop: 1, marginLeft: 60, marginRight: 60,
-                textAlign: 'center', backgroundColor: '#b3daff'
+                textAlign: 'center', backgroundColor: '#88bcc3'
             }}>
-                <Box sx={{ bgcolor: 'rgba(255, 255, 255, 0.6)', borderRadius: 5,  width: '100%', alignItems: 'center', marginTop: 1 }}>
+                <Box sx={{ bgcolor: 'rgba(255, 255, 255, 0.6)', borderRadius: 5, width: '100%', alignItems: 'center', marginTop: 1 }}>
                     <Weather />
                 </Box>
             </Box>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', backgroundImage: `url(${backgroundImage})`, backgroundSize: 'cover', padding: '20px', backgroundRepeat: 'repeat-y' }}>
-                <Box sx={{ bgcolor: 'rgba(255, 255, 255, 0.6)', p: 3, borderRadius: 5, marginTop: '1px', width: '90%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                    
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', backgroundColor: '#88bcc3', padding: '20px', backgroundRepeat: 'repeat-y' }}>
+                <Box sx={{ bgcolor: 'rgba(255, 255, 255, 0.6)', p: 3, borderRadius: 5, marginTop: '10px', width: '90%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+
                     <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
                         <UserOverview refreshData={handleRefreshData} />
                     </Box>
                 </Box>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '103vh', backgroundColor: '#b3daff' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '103vh', backgroundColor: '#88bcc3' }}>
                 <Box sx={{ bgcolor: 'rgba(255, 255, 255, 0.6)', p: 3, height: '95%', borderRadius: 5, marginTop: '20px', width: '60%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
 
                     <Box sx={{ width: '100%' }}>
@@ -156,6 +158,20 @@ const UserDashboard = () => {
                     </Box>
                 </Box>
 
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#88bcc3', padding: '20px' }}>
+                <Box sx={{ bgcolor: 'rgba(255, 255, 255, 0.6)', p: 3, borderRadius: 5, width: '90%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                    <Typography variant="h5" color='primary' gutterBottom align="center">
+                        Istorijski podaci
+                    </Typography>
+                    <div>
+                        <Link to="/historicalData">
+                            <Button variant="contained" color="primary">
+                                Pogledaj istorijske podatke
+                            </Button>
+                        </Link>
+                    </div>
+                </Box>
             </div>
         </div>
 

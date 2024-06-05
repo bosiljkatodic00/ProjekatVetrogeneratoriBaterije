@@ -84,3 +84,35 @@ export const stop = async (id, token) => {
         throw new Error('Greška prilikom zaustavljanja sistema.');
     }
 }
+
+export const getVHistory = async (id, token) => {
+    try {
+        const { data } = await axios.get(`${baseUrl}/vb/historyV?id=${id}`,
+        {
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`
+            }
+        });
+        return data;
+    } catch (error) {
+        console.error(error);
+        throw new Error('Greška prilikom dobavljanja istorije vetrogeneratora.');
+    }
+};
+
+export const getBHistory = async (id, token) => {
+    try {
+        const { data } = await axios.get(`${baseUrl}/vb/historyB?id=${id}`,
+        {
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`
+            }
+        });
+        return data;
+    } catch (error) {
+        console.error(error);
+        throw new Error('Greška prilikom dobavljanja istorije baterije.');
+    }
+};

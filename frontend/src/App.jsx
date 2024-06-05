@@ -7,6 +7,7 @@ import Home from './components/Home'
 import Header from './components/Header';
 import AdminDashboard from './components/AdminDashboard'
 import UserDashboard from './components/UserDashboard';
+import HistoricalDataChart from './components/HistoricalDataChart';
 
 function App() {
 
@@ -53,7 +54,7 @@ function App() {
           <Route path='/' element={<Home />}></Route>
           <Route path='/adminDashboard' element={<AdminDashboard></AdminDashboard>}/>
           <Route path='/userDashboard' element={<UserDashboard></UserDashboard>}/>
-
+          <Route path='/historicalData' element={<HistoricalDataChart></HistoricalDataChart>}/>
         </Routes>
       </BrowserRouter>
     </div>

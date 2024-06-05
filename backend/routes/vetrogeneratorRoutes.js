@@ -24,4 +24,7 @@ router.get('/settingsGet', VerifyToken, vetrogeneratorController.getSettings);
 router.post('/startSystem', VerifyToken, vetrogeneratorController.startSystem);
 router.post('/stopSystem', VerifyToken, vetrogeneratorController.stopSystem);
 
+router.get('/historyV', VerifyToken, vetrogeneratorController.getVDataHistory);
+router.get('/historyB', VerifyToken, vetrogeneratorController.getBDataHistory);
+
 export default router;

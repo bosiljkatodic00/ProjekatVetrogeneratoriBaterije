@@ -1,6 +1,9 @@
 import VetrogeneratorModel from '../models/Vetrogenerator.js';
 import BaterijaModel from '../models/Baterija.js';
 import SettingModel from '../models/Setting.js';
+import { HistoricalVetrogeneratorDataModel, HistoricalBatteryDataModel } from '../models/DataHistory.js';
+
+
 import { v4 as uuidv4 } from 'uuid';  // ES6 sintaksa za importovanje uuid
 import axios from 'axios';
 
@@ -33,14 +36,14 @@ const stopSystemUpdateState = async (id) => {
 
         vetrogenerator.trenutnaSnagaV = 0;
         await vetrogenerator.save();
-  
+
         baterija.stanje = "mirovanje";
         await baterija.save();
 
         console.log(`Sistem sa ID-jem: ${id} je zaustavljen.`);
     } catch (error) {
         console.error('Greška prilikom zaustavljanja sistema:', error);
-    }   
+    }
 }
 
 const updateSystemState = async (id) => {
@@ -126,6 +129,43 @@ const updateSystemState = async (id) => {
         console.error('Greška prilikom ažuriranja sistema:', error);
     }
 };
+
+const saveVetrogeneratorData = async (vetrogenerator) => {
+    const historicalData = new HistoricalVetrogeneratorDataModel({
+        vetrogeneratorId: vetrogenerator._id,
+        trenutnaSnagaV: vetrogenerator.trenutnaSnagaV,
+        vlasnik: vetrogenerator.vlasnik 
+    });
+    await historicalData.save();
+};
+
+const saveBatteryData = async (battery) => {
+    const historicalData = new HistoricalBatteryDataModel({
+        batteryId: battery._id,
+        napunjenostB: battery.napunjenostB,
+        vlasnik: battery.vlasnik
+    });
+    await historicalData.save();
+};
+
+
+// Funkcija koja se periodično poziva za čuvanje istorijskih podataka
+const saveHistoricalDataPeriodically = async () => {
+    try {
+        const vetrogenerators = await VetrogeneratorModel.find();
+        const batteries = await BaterijaModel.find();
+
+        vetrogenerators.forEach(saveVetrogeneratorData);
+        batteries.forEach(saveBatteryData);
+
+        console.log('Istorijski podaci su uspešno sačuvani.');
+    } catch (error) {
+        console.error('Greška prilikom čuvanja istorijskih podataka:', error);
+    }
+};
+
+// Pozovite ovu funkciju periodično, svakih 5 minuta
+setInterval(saveHistoricalDataPeriodically, 1 * 60 * 1000);
 
 const vetrogeneratorController = {
     createVB: async (req, res) => {
@@ -295,96 +335,6 @@ const vetrogeneratorController = {
             res.status(500).json({ message: 'Greška prilikom dobijanja postavki.', error });
         }
     },
-/*
-    startSystem: async (req, res) => {
-        try {
-            const id = req.query.id;
-            // Pronađemo vetrogenerator i bateriju s odgovarajućim systemId-om
-            const vetrogenerator = await VetrogeneratorModel.findOne({ systemId: id });
-            const baterija = await BaterijaModel.findOne({ systemId: id });
-
-            if (!vetrogenerator || !baterija) {
-                return res.status(404).json({ message: 'Vetrogenerator ili baterija nisu pronađeni.' });
-            }
-            // Dohvatimo trenutnu brzinu vjetra na osnovu lokacije vetrogeneratora
-            //const windSpeed = await getWindSpeed(vetrogenerator.lokacija.coordinates[1], vetrogenerator.lokacija.coordinates[0]);
-            const windSpeed = 4;
-            // Računamo električnu snagu vetrogeneratora na osnovu brzine vjetra
-            // Dohvatimo postavke iz baze
-            const settings = await SettingModel.findOne();
-            const Vmin = settings.vmin; // Minimalna brzina vjetra (m/s)
-            const Vfull = settings.vfull; // Dovoljna brzina vjetra (m/s)
-            const Vmax = settings.vmax; // Maksimalna brzina vjetra (m/s)
-
-            const t1 = baterija.t1; // Baterija se prazni nakon 07:00h i tada je cijena t1
-            const t2 = baterija.t2; // Cena energije t2 ako je trenutno vreme između 23:00 i 07:00
-
-            if (Vmin == 0 || Vmin == undefined || Vmin == null || Vmax == 0 || Vmax == undefined ||
-                Vmax == null || Vfull == 0 || Vfull == undefined || Vfull == null ||
-                t1 == 0 || t2 == 0) {
-                res.status(500).json({ message: 'Nije moguce pokrenuti sistem, admin nije unio sve potrebne podatke.' });
-            }
-
-            const Pn = vetrogenerator.nominalnaSnagaV; // Nominalna električna snaga vetrogeneratora (kW)  9 za BG
-
-            let P = 0; //trenutna elektricna snaga vetrogeneratora (kW)
-            if (windSpeed > Vmin && windSpeed < Vfull) {
-                P = ((windSpeed - Vmin) / (Vmax - Vmin)) * Pn;
-            } else if (windSpeed > Vfull && windSpeed < Vmax) {
-                P = Pn;
-            } else if (windSpeed < Vmin) {
-                P = 0;
-            } else if (windSpeed > Vmax) {
-                P = 0;
-            }
-
-            vetrogenerator.trenutnaSnagaV = P;
-            await vetrogenerator.save();
-
-            // Pratimo trenutno vreme
-            const currentTime = new Date();
-            const currentHour = currentTime.getHours();
-
-            // Određujemo trenutnu cenu energije
-            let cenaEnergije = 0;
-
-            if (currentHour >= 23 || currentHour < 7) {
-                cenaEnergije = t2; // Cena energije t2 ako je trenutno vreme između 23:00 i 07:00
-            } else {
-                cenaEnergije = t1; // Inače, cena energije je t1
-            }
-
-            // Provjeravamo stanje baterije
-            const kapacitetBaterije = 1000; // 1 MWh = 1000 kWh
-            const snagaPunjenjaPraznjenja = kapacitetBaterije / 4; // 1 MWh / 4h = 250 kW/h
-
-            if (baterija.napunjenostB < kapacitetBaterije && P > 0 && (currentHour >= 23 || currentHour < 7)) {
-                baterija.stanje = "punjenje";
-                baterija.napunjenostB += Math.min(snagaPunjenjaPraznjenja, P) * 4; // Punjenje za 4 sata
-                if (baterija.napunjenostB > kapacitetBaterije) {
-                    baterija.napunjenostB = kapacitetBaterije;
-                }
-            } else if (baterija.napunjenostB > 0 && currentHour >= 7) {
-                baterija.stanje = "praznjenje";
-                const isporucenaEnergija = Math.min(baterija.napunjenostB, snagaPunjenjaPraznjenja);
-                baterija.napunjenostB -= isporucenaEnergija;
-                // Ovdje šaljemo isporučenu energiju u mrežu
-            } else if (baterija.napunjenostB === kapacitetBaterije || baterija.napunjenostB === 0) {
-                baterija.stanje = "mirovanje";
-            }
-
-            // Ovdje možemo ažurirati stanje baterije i vjetrogeneratora u bazi podataka
-            await baterija.save(); // Spremanje promjena u bateriji
-
-
-            console.log(`Pokretanje sistema sa ID-jem: ${id}`);
-            console.log(`Trenutna cena energije: ${cenaEnergije}`);
-            res.status(200).json({ message: 'Sistem je pokrenut.' });
-        } catch (error) {
-            console.error('Greška prilikom pokretanja sistema:', error);
-            res.status(500).json({ message: 'Došlo je do greške prilikom pokretanja sistema.' });
-        }
-    },*/
 
     startSystem: async (req, res) => {
         try {
@@ -416,7 +366,30 @@ const vetrogeneratorController = {
             console.error('Greška prilikom zaustavljanja sistema:', error);
             res.status(500).json({ message: 'Greška prilikom zaustavljanja sistema.', error: error.message });
         }
+    }, 
+
+    getVDataHistory: async (req, res) => {
+        try {
+            const id = req.query.id;
+            const historicalData = await HistoricalVetrogeneratorDataModel.find({ vlasnik : id }).sort({ timestamp: 1 });
+            res.status(200).json(historicalData);
+        } catch (error) {
+            console.error('Greška prilikom dobavljanja istorije podataka vetrogeneratora', error);
+            res.status(500).json({ message: 'Greška prilikom dobavljanja istorije podataka vetrogeneratora.', error: error.message });
+        }
+    },
+
+    getBDataHistory: async (req, res) => {
+        try {
+            const id = req.query.id;
+            const historicalData = await HistoricalBatteryDataModel.find({ vlasnik: id }).sort({ timestamp: 1 });
+            res.status(200).json(historicalData);
+        } catch (error) {
+            console.error('Greška prilikom dobavljanja istorije podataka baterije', error);
+            res.status(500).json({ message: 'Greška prilikom dobavljanja istorije podataka baterije.', error: error.message });
+        }
     }
+
 
 };
 
