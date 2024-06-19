@@ -61,8 +61,8 @@ const updateSystemState = async (id) => {
 
         const settings = await SettingModel.findOne();
         const Vmin = settings.vmin;
-        const Vfull = settings.vfull;
-        const Vmax = settings.vmax;
+        const Vfull = 3;
+        const Vmax = 5;
 
         const t1 = baterija.t1;
         const t2 = baterija.t2;
@@ -74,7 +74,7 @@ const updateSystemState = async (id) => {
             return;
         }
 
-        const Pn = vetrogenerator.nominalnaSnagaV;
+        const Pn = vetrogenerator.nominalnaSnagaV; //u [MW]
 
         let P = 0;
         if (windSpeed > Vmin && windSpeed < Vfull) {
@@ -102,20 +102,20 @@ const updateSystemState = async (id) => {
             cenaEnergije = t1;
         }
 
-        const kapacitetBaterije = 1000; // 1 MWh = 1000 kWh
-        const snagaPunjenjaPraznjenja = kapacitetBaterije / 4; // 250 kW/h
+        const kapacitetBaterije = baterija.kapacitetB; // npr. 1 MWh = 1000 kWh
+        const snagaPunjenjaPraznjenja = kapacitetBaterije / 4; // npr. 250 kW/h = 0.25 MW/h ----> maksimalna brzina punjenja 
         const updateInterval = 5000; // 5 sekundi
         const brojIntervala = 4 * 60 * 60 * 1000 / updateInterval; // 4 sata * 60 minuta * 60 sekundi * 1000 milisekundi / 5000 ms = 720
 
-        if (baterija.napunjenostB < kapacitetBaterije && P > 0 && (currentHour >= 23 || currentHour < 7)) {
+        if (baterija.napunjenostB < kapacitetBaterije && P > 0 && (currentHour >= 18 || currentHour < 7)) {
             baterija.stanje = "punjenje";
-            baterija.napunjenostB += Math.min(snagaPunjenjaPraznjenja, P) / brojIntervala;
+            baterija.napunjenostB += Math.min(snagaPunjenjaPraznjenja, P) / brojIntervala; //osigurava se da se baterija puni ili prazni u skladu sa mogućnostima trenutnog trenutka
             if (baterija.napunjenostB > kapacitetBaterije) {
                 baterija.napunjenostB = kapacitetBaterije;
             }
         } else if (baterija.napunjenostB > 0 && currentHour >= 7) {
             baterija.stanje = "praznjenje";
-            const isporucenaEnergija = Math.min(baterija.napunjenostB, snagaPunjenjaPraznjenja / brojIntervala);
+            const isporucenaEnergija = Math.min(baterija.napunjenostB, snagaPunjenjaPraznjenja / brojIntervala); //ne isporučuje više energije nego što je trenutno dostupno u bateriji ili više nego što je maksimalna brzina pražnjenja u jedinici vremena
             baterija.napunjenostB -= isporucenaEnergija;
         } else if (baterija.napunjenostB === kapacitetBaterije || baterija.napunjenostB === 0) {
             baterija.stanje = "mirovanje";
@@ -192,7 +192,7 @@ const vetrogeneratorController = {
                 });
                 await baterija.save();
 
-                res.status(201).json({ message: 'Vetrogenerator i baterija kreirani.' });
+                res.status(201).json({ message: 'Vetrogenerator i baterija kreirani. Sistem cete moci da pokrenete tek kada Admin unese potrebne parametre.' });
             }
 
         } catch (error) {

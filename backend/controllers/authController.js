@@ -1,15 +1,18 @@
 import UserModel from '../models/User.js';
+import bcrypt from 'bcrypt';
 
 const authController = {
   register: async (req, res) => {
-    const { email } = req.body;
+    const { email, password } = req.body;
 
     try {
       const existingUser = await UserModel.findOne({ email: email });
       if (existingUser) {
         return res.status(400).json({ message: "Korisnik sa tim emailom već postoji" });
       } else {
-        const newUser = await UserModel.create(req.body);
+        // Heširanje lozinke pre čuvanja u bazi
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const newUser = await UserModel.create({ ...req.body, password: hashedPassword });
         return res.status(201).json(newUser);
       }
     } catch (err) {
@@ -28,7 +31,9 @@ const authController = {
           return res.status(403).json({ message: 'Vaš nalog je blokiran. Molimo kontaktirajte podršku.' });
         }
 
-        if (user.password === password) {
+        // Upoređivanje unete lozinke sa heširanom lozinkom iz baze
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (isPasswordValid) {
           return res.json({ message: "Success", type: user.userType, user: user });
         } else {
           return res.json({ message: "The password is incorrect" });

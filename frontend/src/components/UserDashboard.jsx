@@ -124,7 +124,7 @@ const UserDashboard = () => {
                                     Podaci o vetrogeneratoru:
                                 </Typography>
                                 <TextField
-                                    label="Nominalna snaga"
+                                    label="Nominalna snaga [MW]"
                                     variant="outlined"
                                     name="nominalnaSnagaV"
                                     value={formData.nominalnaSnagaV}
@@ -139,7 +139,7 @@ const UserDashboard = () => {
                                     Podaci o bateriji:
                                 </Typography>
                                 <TextField
-                                    label="Kapacitet baterije"
+                                    label="Kapacitet baterije [MWh]"
                                     variant="outlined"
                                     name="kapacitetB"
                                     value={formData.kapacitetB}

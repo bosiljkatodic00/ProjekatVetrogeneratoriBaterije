@@ -7,6 +7,7 @@ import { styled } from '@mui/system';
 const HeaderButton = styled(Button)({
   backgroundColor: '#003C43', // Željena boja
   color: 'white', // Boja teksta
+  textTransform: 'none', // tekst ostaje kakav jest
   '&:hover': {
     backgroundColor: '#135D66', // Boja prilikom hovera
   },
@@ -28,14 +29,14 @@ const Header = ({ isAuth, userType, handleLogout }) => {
         backgroundColor: '#135D66'
       }}
     >
-      <ButtonGroup spacing="0.5rem" aria-label="spacing button group" sx={{ marginTop: 0.3, marginBottom: 1 }}>
+      <ButtonGroup spacing="0.5rem" aria-label="spacing button group" sx={{ marginTop: 0.3, marginBottom: 1}}>
         {!isAuth && (
           <HeaderButton
             sx={{ m: 1 }}
             variant="contained"
             onClick={() => nav('login')}
           >
-            Log in
+            Log In
           </HeaderButton>
         )}
         {!isAuth && (
@@ -49,6 +50,7 @@ const Header = ({ isAuth, userType, handleLogout }) => {
         )}
         {isAuth && userType === 'user' && (
           <HeaderButton
+            sx={{ marginTop: 0.3, marginBottom: 1, marginLeft: 2}}
             variant="contained"
             onClick={() => nav('userDashboard')}
           >
@@ -58,6 +60,7 @@ const Header = ({ isAuth, userType, handleLogout }) => {
 
         {isAuth && userType === 'admin' && (
           <HeaderButton
+            sx={{ marginTop: 0.3, marginBottom: 1, marginLeft: 2}}
             variant="contained"
             onClick={() => nav('adminDashboard')}
           >
@@ -68,6 +71,7 @@ const Header = ({ isAuth, userType, handleLogout }) => {
         {isAuth && (
           <HeaderButton
             variant="contained"
+            sx={{ marginTop: 0.3, marginBottom: 1, marginRight: 2}}
             onClick={handleLogout}
             href="/home"
           >

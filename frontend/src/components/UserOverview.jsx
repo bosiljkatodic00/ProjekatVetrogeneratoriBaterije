@@ -92,7 +92,7 @@ const UserOverview = ({ refreshData }) => {
                 <TableRow>
                   <TableCell>ID sistema</TableCell>
                   <TableCell>ID vetrogeneratora</TableCell>
-                  <TableCell>Snaga vetrogeneratora [kW]</TableCell>
+                  <TableCell>Snaga vetrogeneratora [MW]</TableCell>
                   <TableCell>Akcije</TableCell>
                 </TableRow>
               </TableHead>
@@ -124,7 +124,7 @@ const UserOverview = ({ refreshData }) => {
               <TableHead>
                 <TableRow>
                   <TableCell>ID baterije</TableCell>
-                  <TableCell>Napunjenost baterije [kWh]</TableCell>
+                  <TableCell>Napunjenost baterije [MWh]</TableCell>
                   <TableCell>Status baterije</TableCell>
                   <TableCell>Akcije</TableCell>
                 </TableRow>

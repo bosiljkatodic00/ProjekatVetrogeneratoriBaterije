@@ -268,8 +268,8 @@ const AdminDashboard = () => {
                                 <TableCell>Pokreni/Zaustavi sistem</TableCell>
                                 <TableCell>ID sistema</TableCell>
                                 <TableCell>ID vetrogeneratora</TableCell>
-                                <TableCell>Nominalna snaga</TableCell>
-                                <TableCell>Trenutna snaga</TableCell>
+                                <TableCell>Nominalna snaga [MW]</TableCell>
+                                <TableCell>Trenutna snaga [MW]</TableCell>
                                 <TableCell>Vlasnik ID</TableCell>
                                 <TableCell>Akcija</TableCell>
                             </TableRow>
@@ -312,13 +312,13 @@ const AdminDashboard = () => {
                             <TableRow>
                                 <TableCell>ID sistema</TableCell>
                                 <TableCell>ID baterije</TableCell>
-                                <TableCell>Kapacitet</TableCell>
+                                <TableCell>Kapacitet [MWh]</TableCell>
                                 <TableCell>Vlasnik ID</TableCell>
-                                <TableCell>Napunjenost</TableCell>
-                                <TableCell>Trajanje punjenja</TableCell>
-                                <TableCell>Trajanje pražnjenja</TableCell>
-                                <TableCell>t1</TableCell>
-                                <TableCell>t2</TableCell>
+                                <TableCell>Napunjenost [MWh]</TableCell>
+                                <TableCell>Trajanje punjenja [h]</TableCell>
+                                <TableCell>Trajanje pražnjenja [h]</TableCell>
+                                <TableCell>t1 [dinari]</TableCell>
+                                <TableCell>t2 [dinari]</TableCell>
                                 <TableCell>Stanje</TableCell>
                                 <TableCell>Akcija</TableCell>
                             </TableRow>
