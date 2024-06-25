@@ -159,7 +159,7 @@ const AdminDashboard = () => {
             alert('Greška prilikom ažuriranja postavki.');
         }
     };
-
+/*
     const startSystem = async (systemId) => {
         try {
           // Vaša logika za pokretanje sistema
@@ -170,7 +170,8 @@ const AdminDashboard = () => {
           alert('Došlo je do greške prilikom pokretanja sistema.');
         }
       };
-    
+/*
+    /*
       const stopSystem = async (systemId) => {
         try {
           // Vaša logika za zaustavljanje sistema
@@ -181,7 +182,7 @@ const AdminDashboard = () => {
           alert('Došlo je do greške prilikom zaustavljanja sistema.');
         }
       };
-
+*/
     return (
         <Box sx={{ alignItems: 'center', justifyContent: 'center', backgroundColor: '#88bcc3', padding: 3 }}>
             <Typography variant="h4" gutterBottom>Admin Dashboard</Typography>
@@ -265,7 +266,6 @@ const AdminDashboard = () => {
                     <Table>
                         <TableHead>
                             <TableRow>
-                                <TableCell>Pokreni/Zaustavi sistem</TableCell>
                                 <TableCell>ID sistema</TableCell>
                                 <TableCell>ID vetrogeneratora</TableCell>
                                 <TableCell>Nominalna snaga [MW]</TableCell>
@@ -277,14 +277,7 @@ const AdminDashboard = () => {
                         <TableBody>
                             {vetrogenerators.map(v => (
                                 <TableRow key={v._id}>
-                                    <TableCell>
-                                        <Button size="small" variant="contained" color="primary" onClick={() => startSystem(v.systemId)}>
-                                            Start
-                                        </Button>
-                                        <Button size="small" variant="contained" color="secondary" onClick={() => stopSystem(v.systemId)}>
-                                            Stop
-                                        </Button>
-                                    </TableCell>
+                                    
                                     <TableCell>{v.systemId}</TableCell>
                                     <TableCell>{v._id}</TableCell>
                                     <TableCell>{v.nominalnaSnagaV}</TableCell>

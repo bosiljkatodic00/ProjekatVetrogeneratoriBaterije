@@ -2,6 +2,7 @@ import VetrogeneratorModel from '../models/Vetrogenerator.js';
 import BaterijaModel from '../models/Baterija.js';
 import SettingModel from '../models/Setting.js';
 import { HistoricalVetrogeneratorDataModel, HistoricalBatteryDataModel } from '../models/DataHistory.js';
+import moment from 'moment-timezone';
 
 
 import { v4 as uuidv4 } from 'uuid';  // ES6 sintaksa za importovanje uuid
@@ -23,7 +24,7 @@ const getWindSpeed = async (latitude, longitude) => {
 };
 
 let intervalId = null;
-
+/*
 const stopSystemUpdateState = async (id) => {
     try {
         const vetrogenerator = await VetrogeneratorModel.findOne({ systemId: id });
@@ -45,96 +46,15 @@ const stopSystemUpdateState = async (id) => {
         console.error('Greška prilikom zaustavljanja sistema:', error);
     }
 }
+*/
 
-const updateSystemState = async (id) => {
-    try {
-        const vetrogenerator = await VetrogeneratorModel.findOne({ systemId: id });
-        const baterija = await BaterijaModel.findOne({ systemId: id });
-
-        if (!vetrogenerator || !baterija) {
-            console.error('Vetrogenerator ili baterija nisu pronađeni.');
-            return;
-        }
-
-        const windSpeed = await getWindSpeed(vetrogenerator.lokacija.coordinates[1], vetrogenerator.lokacija.coordinates[0]);
-        console.log(`Brzina vjetra: ${windSpeed}`);  // Log brzine vjetra
-
-        const settings = await SettingModel.findOne();
-        const Vmin = settings.vmin;
-        const Vfull = 3;
-        const Vmax = 5;
-
-        const t1 = baterija.t1;
-        const t2 = baterija.t2;
-
-        if (Vmin == 0 || Vmin == undefined || Vmin == null || Vmax == 0 || Vmax == undefined ||
-            Vmax == null || Vfull == 0 || Vfull == undefined || Vfull == null ||
-            t1 == 0 || t2 == 0) {
-            console.error('Nije moguće pokrenuti sistem, admin nije unio sve potrebne podatke.');
-            return;
-        }
-
-        const Pn = vetrogenerator.nominalnaSnagaV; //u [MW]
-
-        let P = 0;
-        if (windSpeed > Vmin && windSpeed < Vfull) {
-            P = ((windSpeed - Vmin) / (Vmax - Vmin)) * Pn;
-        } else if (windSpeed > Vfull && windSpeed < Vmax) {
-            P = Pn;
-        } else if (windSpeed < Vmin) {
-            P = 0;
-        } else if (windSpeed > Vmax) {
-            P = 0;
-        }
-        console.log(`Izračunata snaga: ${P}`);  // Log izračunate snage
-
-        vetrogenerator.trenutnaSnagaV = P;
-        await vetrogenerator.save();
-
-        const currentTime = new Date();
-        const currentHour = currentTime.getHours();
-
-        let cenaEnergije = 0;
-
-        if (currentHour >= 23 || currentHour < 7) {
-            cenaEnergije = t2;
-        } else {
-            cenaEnergije = t1;
-        }
-
-        const kapacitetBaterije = baterija.kapacitetB; // npr. 1 MWh = 1000 kWh
-        const snagaPunjenjaPraznjenja = kapacitetBaterije / 4; // npr. 250 kW/h = 0.25 MW/h ----> maksimalna brzina punjenja 
-        const updateInterval = 5000; // 5 sekundi
-        const brojIntervala = 4 * 60 * 60 * 1000 / updateInterval; // 4 sata * 60 minuta * 60 sekundi * 1000 milisekundi / 5000 ms = 720
-
-        if (baterija.napunjenostB < kapacitetBaterije && P > 0 && (currentHour >= 18 || currentHour < 7)) {
-            baterija.stanje = "punjenje";
-            baterija.napunjenostB += Math.min(snagaPunjenjaPraznjenja, P) / brojIntervala; //osigurava se da se baterija puni ili prazni u skladu sa mogućnostima trenutnog trenutka
-            if (baterija.napunjenostB > kapacitetBaterije) {
-                baterija.napunjenostB = kapacitetBaterije;
-            }
-        } else if (baterija.napunjenostB > 0 && currentHour >= 7) {
-            baterija.stanje = "praznjenje";
-            const isporucenaEnergija = Math.min(baterija.napunjenostB, snagaPunjenjaPraznjenja / brojIntervala); //ne isporučuje više energije nego što je trenutno dostupno u bateriji ili više nego što je maksimalna brzina pražnjenja u jedinici vremena
-            baterija.napunjenostB -= isporucenaEnergija;
-        } else if (baterija.napunjenostB === kapacitetBaterije || baterija.napunjenostB === 0) {
-            baterija.stanje = "mirovanje";
-        }
-
-        await baterija.save();
-
-        console.log(`Sistem sa ID-jem: ${id} je ažuriran.`);
-        console.log(`Trenutna cena energije: ${cenaEnergije}`);
-    } catch (error) {
-        console.error('Greška prilikom ažuriranja sistema:', error);
-    }
-};
 
 const saveVetrogeneratorData = async (vetrogenerator) => {
     const historicalData = new HistoricalVetrogeneratorDataModel({
         vetrogeneratorId: vetrogenerator._id,
         trenutnaSnagaV: vetrogenerator.trenutnaSnagaV,
-        vlasnik: vetrogenerator.vlasnik 
+        vlasnik: vetrogenerator.vlasnik,
+        systemId: vetrogenerator.systemId
     });
     await historicalData.save();
 };
@@ -143,12 +63,14 @@ const saveBatteryData = async (battery) => {
     const historicalData = new HistoricalBatteryDataModel({
         batteryId: battery._id,
         napunjenostB: battery.napunjenostB,
-        vlasnik: battery.vlasnik
+        vlasnik: battery.vlasnik,
+        stanje: battery.stanje,
+        systemId: battery.systemId
     });
     await historicalData.save();
 };
 
-
+/*
 // Funkcija koja se periodično poziva za čuvanje istorijskih podataka
 const saveHistoricalDataPeriodically = async () => {
     try {
@@ -163,9 +85,9 @@ const saveHistoricalDataPeriodically = async () => {
         console.error('Greška prilikom čuvanja istorijskih podataka:', error);
     }
 };
-
-// Pozovite ovu funkciju periodično, svakih 5 minuta
-setInterval(saveHistoricalDataPeriodically, 1 * 60 * 1000);
+*/
+// Pozovite ovu funkciju periodično, svakih sat vremena
+//setInterval(saveHistoricalDataPeriodically, 60 * 60 * 1000);
 
 const vetrogeneratorController = {
     createVB: async (req, res) => {
@@ -191,6 +113,8 @@ const vetrogeneratorController = {
                     trajanjePraznjenjaB, napunjenostB, t1, t2, systemId
                 });
                 await baterija.save();
+                
+                await updateSystemState(); //racunanje stanja sistema i cuvanje istorijskih podataka
 
                 res.status(201).json({ message: 'Vetrogenerator i baterija kreirani. Sistem cete moci da pokrenete tek kada Admin unese potrebne parametre.' });
             }
@@ -198,6 +122,101 @@ const vetrogeneratorController = {
         } catch (error) {
             console.error(error);
             res.status(500).json({ message: 'Greška prilikom kreiranja vetrogeneratora i baterije.', error: error.message });
+        }
+    },
+    
+    updateSystemState : async (req, res) => {
+        try {
+            const vetrogenerators = await VetrogeneratorModel.find();
+            const batteries = await BaterijaModel.find();
+    
+            if (!vetrogenerators || !batteries) {
+                console.error('Vetrogeneratori ili baterije nisu pronađeni.');
+                return;
+            }
+    
+            const settings = await SettingModel.findOne();
+            const Vmin = settings.vmin;
+            const Vfull = 3;
+            const Vmax = 5;
+    
+            if (Vmin == 0 || Vmin == undefined || Vmin == null || Vmax == 0 || Vmax == undefined ||
+                Vmax == null || Vfull == 0 || Vfull == undefined || Vfull == null) {
+                console.error('Nije moguće pokrenuti sistem, admin nije unio sve potrebne podatke.');
+                return;
+            }
+    
+            for (let vetrogenerator of vetrogenerators) {
+                const baterija = batteries.find(b => b.systemId === vetrogenerator.systemId);
+    
+                if (!baterija) {
+                    console.error(`Baterija za sistem ${vetrogenerator.systemId} nije pronađena.`);
+                    continue;
+                }
+    
+                const windSpeed = await getWindSpeed(vetrogenerator.lokacija.coordinates[1], vetrogenerator.lokacija.coordinates[0]);
+                console.log(`Brzina vjetra za sistem ${vetrogenerator.systemId}: ${windSpeed}`);
+    
+                const Pn = vetrogenerator.nominalnaSnagaV; // u [MW]
+                let P = 0;
+    
+                if (windSpeed > Vmin && windSpeed < Vfull) {
+                    P = ((windSpeed - Vmin) / (Vmax - Vmin)) * Pn;
+                } else if (windSpeed > Vfull && windSpeed < Vmax) {
+                    P = Pn;
+                } else if (windSpeed < Vmin || windSpeed > Vmax) {
+                    P = 0;
+                }
+                console.log(`Izračunata snaga za sistem ${vetrogenerator.systemId}: ${P}`);
+    
+                vetrogenerator.trenutnaSnagaV = P;
+                await vetrogenerator.save();
+    
+                const currentTime = new Date();
+                const currentHour = currentTime.getHours();
+                const t1 = baterija.t1;
+                const t2 = baterija.t2;
+    
+                let cenaEnergije = 0;
+                if (currentHour >= 23 || currentHour < 7) {
+                    cenaEnergije = t2;
+                } else {
+                    cenaEnergije = t1;
+                }
+    
+                const kapacitetBaterije = baterija.kapacitetB; // npr. 1 MWh = 1000 kWh
+                const snagaPunjenjaPraznjenja = kapacitetBaterije / 4; // npr. 250 kW/h = 0.25 MW/h
+                //const updateInterval = 5000; // 5 sekundi
+                //const brojIntervala = 4 * 60 * 60 * 1000 / updateInterval; // 4 sata * 60 minuta * 60 sekundi * 1000 milisekundi / 5000 ms = 2880
+    
+                if (baterija.napunjenostB < kapacitetBaterije && P > 0 && (currentHour >= 23 || currentHour < 7)) {
+                    baterija.stanje = "punjenje";
+                    baterija.napunjenostB += Math.min(snagaPunjenjaPraznjenja, P); // Dodaj punu snagu za jedan sat
+                    if (baterija.napunjenostB > kapacitetBaterije) {
+                        baterija.napunjenostB = kapacitetBaterije;
+                    }
+                } else if (baterija.napunjenostB > 0 && currentHour >= 7 && currentHour < 23) {
+                    baterija.stanje = "praznjenje";
+                    baterija.napunjenostB -= Math.min(baterija.napunjenostB, snagaPunjenjaPraznjenja); // Ispusti punu snagu za jedan sat
+                    if (baterija.napunjenostB < 0) {
+                        baterija.napunjenostB = 0;
+                    }
+                } else {
+                    baterija.stanje = "mirovanje";
+                }
+    
+                await baterija.save();
+                console.log(`Sistem sa ID-jem: ${vetrogenerator.systemId} je ažuriran.`);
+                console.log(`Trenutna cena energije: ${cenaEnergije}`);
+    
+                // Sačuvaj istorijske podatke
+                await saveVetrogeneratorData(vetrogenerator);
+                await saveBatteryData(baterija);
+            }
+            console.log('Svi sistemi su ažurirani.');
+    
+        } catch (error) {
+            console.error('Greška prilikom ažuriranja sistema:', error);
         }
     },
 
@@ -335,24 +354,21 @@ const vetrogeneratorController = {
             res.status(500).json({ message: 'Greška prilikom dobijanja postavki.', error });
         }
     },
-
+/*
     startSystem: async (req, res) => {
         try {
             const id = req.query.id;
 
-            // Pokretanje updateSystemState u intervalima
-            if (intervalId) {
-                clearInterval(intervalId);
-            }
-            intervalId = setInterval(() => updateSystemState(id), 5000);
+            await updateSystemState();
 
-            res.status(200).json({ message: `Sistem sa ID-jem: ${id} je pokrenut.` });
+            res.status(200).json({ message: `Sistem je pokrenut.` });
         } catch (error) {
             console.error('Greška prilikom pokretanja sistema:', error);
             res.status(500).json({ message: 'Greška prilikom pokretanja sistema.', error: error.message });
         }
     },
-
+    */
+/*
     stopSystem: async (req, res) => {
         try {
             const id = req.query.id;
@@ -367,7 +383,7 @@ const vetrogeneratorController = {
             res.status(500).json({ message: 'Greška prilikom zaustavljanja sistema.', error: error.message });
         }
     }, 
-
+*/
     getVDataHistory: async (req, res) => {
         try {
             const id = req.query.id;

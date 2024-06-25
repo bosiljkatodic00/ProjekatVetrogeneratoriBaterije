@@ -31,11 +31,16 @@ mongoose.connect('mongodb://localhost:27017/vbDatabase', { useNewUrlParser: true
     console.log('Connected to MongoDB');
     app.listen(3000, () => {
       console.log('Server started on port 3000');
-      // Periodično čuvanje istorijskih podataka svakih sat vremena
-      cron.schedule('*/1 * * * *', () => {
-        vetrogeneratorController.saveHistoricalDataPeriodically();
+      // Periodično čuvanje istorijskih podataka svakih 60 minuta
+      cron.schedule('*/60 * * * *', () => {
+        try {
+          vetrogeneratorController.updateSystemState();
+          console.log('Running cron job: updateSystemState');
+        } catch (error) {
+          console.error('Error running cron job:', error);
+        }
     });
-    //0 * * * * znači na početku svakog sata, svakog dana, svakog meseca, bez obzira na dan u nedelji
+    // 0 * * * * znači na početku svakog sata, svakog dana, svakog meseca, bez obzira na dan u nedelji
     });
   })
   .catch(err => console.log(err));

@@ -6,6 +6,7 @@ const historicalVetrogeneratorDataSchema = new mongoose.Schema({
     timestamp: { type: Date, default: Date.now },
     nominalnaSnagaV: Number,
     trenutnaSnagaV: Number,
+    systemId: String,
     vlasnik: { type: mongoose.Schema.Types.ObjectId, ref: 'UserModel' }
   });
   
@@ -13,6 +14,12 @@ const historicalVetrogeneratorDataSchema = new mongoose.Schema({
     batteryId: { type: mongoose.Schema.Types.ObjectId, ref: 'BaterijaModel' },
     timestamp: { type: Date, default: Date.now },
     napunjenostB: Number,
+    stanje: {
+      type: String,
+      enum: ['punjenje', 'praznjenje', 'mirovanje'],
+      default: 'mirovanje'
+    },
+    systemId: String,
     vlasnik: { type: mongoose.Schema.Types.ObjectId, ref: 'UserModel' }
   });
   
